@@ -1,0 +1,6 @@
+
+doc:
+	doxygen Doxyfile
+
+
+

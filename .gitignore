@@ -54,3 +54,4 @@ dkms.conf
 # GK things
 build/
 lib/
+.svn/
