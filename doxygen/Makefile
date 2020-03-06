@@ -1,6 +1,0 @@
-
-doc:
-	doxygen Doxyfile
-
-
-
