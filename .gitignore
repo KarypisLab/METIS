@@ -53,6 +53,7 @@ dkms.conf
 
 # GK things
 build/
-lib/
+graphs/*.part.*
 GKlib
 .svn/
+
