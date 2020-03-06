@@ -1,4 +1,6 @@
 # Configuration options.
+i64        = not-set
+r64        = not-set
 gdb        = not-set
 assert     = not-set
 assert2    = not-set
@@ -24,6 +26,12 @@ ifeq ($(gklib_path), not-set)
     gklib_path = GKlib
 endif
 CONFIG_FLAGS += -DGKLIB_PATH=$(abspath $(gklib_path))
+ifneq ($(i64), not-set)
+    CONFIG_FLAGS += -DIDX64=$(i64)
+endif
+ifneq ($(r64), not-set)
+    CONFIG_FLAGS += -DREAL64=$(r64)
+endif
 ifneq ($(gdb), not-set)
     CONFIG_FLAGS += -DGDB=$(gdb)
 endif
