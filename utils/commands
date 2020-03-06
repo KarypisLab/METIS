@@ -1,0 +1,30 @@
+perl -i.bak -pe 's/wgt_t/real_t/g' *.c *.h
+perl -i.bak2 -pe 's/idxmalloc/imalloc/g' *.c *.h
+perl -i.bak3 -pe 's/idxsmalloc/ismalloc/g' *.c *.h
+perl -i.bak4 -pe 's/wgtsmalloc/rsmalloc/g' *.c *.h
+perl -i.bak5 -pe 's/wgtmalloc/rmalloc/g' *.c *.h
+perl -i.bak6 -pe 's/idxwspacemalloc/iwspacemalloc/g' *.c *.h
+perl -i.bak7 -pe 's/fwspacemalloc/rwspacemalloc/g' *.c *.h
+perl -i.bak8 -pe 's/idxwspacefree/iwspacefree/g' *.c *.h
+perl -i.bak9 -pe 's/fwspacefree/rwspacefree/g' *.c *.h
+perl -i.bak10 -pe 's/idxkv_t/ikv_t/g' *.c *.h
+perl -i.bak11 -pe 's/wgtkv_t/rkv_t/g' *.c *.h
+perl -i.bak12 -pe 's/idxset/iset/g' *.c *.h
+perl -i.bak13 -pe 's/idxsum/isum/g' *.c *.h
+perl -i.bak14 -pe 's/idxcopy/icopy/g' *.c *.h
+perl -i.bak15 -pe 's/idxargmax/iargmax/g' *.c *.h
+perl -i.bak16 -pe 's/idxargmin/iargmin/g' *.c *.h
+perl -i.bak17 -pe 's/wgtargmax/rargmax/g' *.c *.h
+perl -i.bak18 -pe 's/wgtargmin/rargmin/g' *.c *.h
+perl -i.bak19 -pe 's/wgtcopy/rcopy/g' *.c *.h
+perl -i.bak20 -pe 's/wgtaxpy/raxpy/g' *.c *.h
+perl -i.bak21 -pe 's/idxrealloc/irealloc/g' *.c *.h
+perl -i.bak22 -pe 's/wgtsum/rsum/g' *.c *.h
+perl -i.bak23 -pe 's/wgtset/rset/g' *.c *.h
+perl -i.bak24 -pe 's/wgtscale/rscale/g' *.c *.h
+perl -i.bak25 -pe 's/wgtnorm2/rnorm2/g' *.c *.h
+perl -i.bak26 -pe 's/wgtkvsortd/rkvsortd/g' *.c *.h
+perl -i.bak27 -pe 's/idxkvsortii/ikvsortii/g' *.c *.h
+perl -i.bak28 -pe 's/idxkvsorti/ikvsorti/g' *.c *.h
+perl -i.bak -pe 's/(%[0-9]*)D/$1\"PRIDX\"/g' *.c
+perl -i.bak2 -pe 's/(%[0-9]*\.?[0-9]*)f/$1\"PRREAL\"/g' *.c

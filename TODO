@@ -1,0 +1,4 @@
+- The split boundary/non-boundary priority queues in the McInit2WayBalance may have
+  some runtime performance advantages
+- Add faster balancing routine for MC
+- Need to check the 2nd switching condition in ccgraph between mask and no-mask.
