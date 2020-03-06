@@ -22,7 +22,7 @@ partitioning schemes developed in our lab.
 ##  Downloading METIS
 
 METIS uses Git submodules to manage external dependencies. Hence, please specify the `--recursive` option while cloning the repo as follow:
-```bash
+```
 git clone --recursive https://github.com/KarypisLab/METIS.git
 ```
 
@@ -35,7 +35,7 @@ To build METIS you can follow the instructions below:
 General dependencies for building slim are: gcc, cmake, build-essential.
 In Ubuntu systems these can be obtained from the apt package manager (e.g., apt-get install cmake, etc) 
 
-```bash
+```
 sudo apt-get install build-essential
 sudo apt-get install cmake
 ```
@@ -44,43 +44,46 @@ sudo apt-get install cmake
 
 METIS is primarily configured by passing options to make config. For example:
 
-```bash
+```
 make config shared=1 cc=gcc prefix=~/local
 make install
 ```
 
-will configure metis to be built as a shared library using GCC and then 
-install the binaries, header files, and libraries at 
-```bash
+will configure metis to be built as a shared library using GCC and then install the binaries, header files, and libraries at 
+
+```
 ~/local/bin
 ~/local/include
 ~/local/lib
 ```
+
 directories, respectively.
 
-Common configuration options are:
+### Common configuration options are:
 
-```bash
-  cc=[compiler]   - The C compiler to use [default is determined by CMake]
-  shared=1        - Build a shared library instead of a static one
-                    [off by default]
-  prefix=[PATH]   - Set the installation prefix [~/local by default]
-  i64=1           - Sets to 64 bits the width of the datatype that will 
-                    store information about the vertices and their adjacency
-                    lists. 
-  r64=1           - Sets to 64 bits the width of the datatype that will 
-                    store information about floating point numbers.
-```
+    cc=[compiler]   - The C compiler to use [default is determined by CMake]
+    shared=1        - Build a shared library instead of a static one [off by default]
+    prefix=[PATH]   - Set the installation prefix [~/local by default]
+    i64=1           - Sets to 64 bits the width of the datatype that will store information about the vertices and their adjacency lists. 
+    r64=1           - Sets to 64 bits the width of the datatype that will store information about floating point numbers.
 
-Advanced debugging related options:
+### Advanced debugging related options:
 
-```bash
-  gdb=1       - Build with support for GDB [off by default]
-  debug=1     - Enable debugging support [off by default]
-  assert=1    - Enable asserts [off by default]
-  assert2=1   - Enable very expensive asserts [off by default]
-```
+    gdb=1       - Build with support for GDB [off by default]
+    debug=1     - Enable debugging support [off by default]
+    assert=1    - Enable asserts [off by default]
+    assert2=1   - Enable very expensive asserts [off by default]
 
+### Other make commands
+
+    make uninstall
+         Removes all files installed by 'make install'.
+
+    make clean
+         Removes all object files but retains the configuration options.
+
+    make distclean
+         Performs clean and completely removes the build directory.
 
 
 <!---
