@@ -1,17 +1,3 @@
-Table of Contents
-=================
-
-<!---
-   * [METIS](#metis)
-      * [Downloading METIS](#downloading-metis)
-      * [Building standalone METIS binary and library](#building-standalone-metis-binary-and-library)
-      * [Getting started](#getting-started)
-      * [Citing](#citing)
-      * [References](#references)
-      * [Credits &amp; Contact Information](#credits--contact-information)
-      * [Copyright &amp; License Notice](#copyright--license-notice)
-
--->
 
 # METIS 
 
