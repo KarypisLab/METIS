@@ -1,6 +1,7 @@
 Table of Contents
 =================
 
+<!---
    * [METIS](#metis)
       * [Downloading METIS](#downloading-metis)
       * [Building standalone METIS binary and library](#building-standalone-metis-binary-and-library)
@@ -10,7 +11,7 @@ Table of Contents
       * [Credits &amp; Contact Information](#credits--contact-information)
       * [Copyright &amp; License Notice](#copyright--license-notice)
 
-
+-->
 
 # METIS 
 
@@ -175,7 +176,7 @@ If you encounter any problems or have any suggestions, please contact George Kar
 -->
 
 ## Copyright & License Notice
-Copyright 2019, Regents of the University of Minnesota
+Copyright 1998-2020, Regents of the University of Minnesota
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
