@@ -1,6 +1,7 @@
 Table of Contents
 =================
 
+<!---
    * [METIS](#metis)
       * [Downloading METIS](#downloading-metis)
       * [Building standalone METIS binary and library](#building-standalone-metis-binary-and-library)
@@ -10,7 +11,7 @@ Table of Contents
       * [Credits &amp; Contact Information](#credits--contact-information)
       * [Copyright &amp; License Notice](#copyright--license-notice)
 
-
+-->
 
 # METIS 
 
@@ -64,15 +65,17 @@ directories, respectively.
     cc=[compiler]   - The C compiler to use [default is determined by CMake]
     shared=1        - Build a shared library instead of a static one [off by default]
     prefix=[PATH]   - Set the installation prefix [~/local by default]
-    i64=1           - Sets to 64 bits the width of the datatype that will store information about the vertices and their adjacency lists. 
-    r64=1           - Sets to 64 bits the width of the datatype that will store information about floating point numbers.
+    i64=1           - Sets to 64 bits the width of the datatype that will store information
+                      about the vertices and their adjacency lists. 
+    r64=1           - Sets to 64 bits the width of the datatype that will store information 
+                      about floating point numbers.
 
 ### Advanced debugging related options:
 
-    gdb=1       - Build with support for GDB [off by default]
-    debug=1     - Enable debugging support [off by default]
-    assert=1    - Enable asserts [off by default]
-    assert2=1   - Enable very expensive asserts [off by default]
+    gdb=1           - Build with support for GDB [off by default]
+    debug=1         - Enable debugging support [off by default]
+    assert=1        - Enable asserts [off by default]
+    assert2=1       - Enable very expensive asserts [off by default]
 
 ### Other make commands
 
@@ -173,7 +176,7 @@ If you encounter any problems or have any suggestions, please contact George Kar
 -->
 
 ## Copyright & License Notice
-Copyright 2019, Regents of the University of Minnesota
+Copyright 1998-2020, Regents of the University of Minnesota
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
