@@ -20,26 +20,26 @@ endif(SHARED)
 include(${GKLIB_PATH}/GKlibSystem.cmake)
 
 # METIS' custom options
-option(IDX64 "enable 64 bit ints" OFF)
-option(REAL64 "enable 64 bit floats (i.e., double)" OFF)
-if(IDX64)
-  set(METIS_COPTIONS "${METIS_COPTIONS} -DIDXTYPEWIDTH=64")
-else()
-  set(METIS_COPTIONS "${METIS_COPTIONS} -DIDXTYPEWIDTH=32")
-endif(IDX64)
-if(REAL64)
-  set(METIS_COPTIONS "${METIS_COPTIONS} -DREALTYPEWIDTH=64")
-else()
-  set(METIS_COPTIONS "${METIS_COPTIONS} -DREALTYPEWIDTH=32")
-endif(IDX64)
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${METIS_COPTIONS}")
+#option(IDX64 "enable 64 bit ints" OFF)
+#option(REAL64 "enable 64 bit floats (i.e., double)" OFF)
+#if(IDX64)
+#  set(METIS_COPTIONS "${METIS_COPTIONS} -DIDXTYPEWIDTH=64")
+#else()
+#  set(METIS_COPTIONS "${METIS_COPTIONS} -DIDXTYPEWIDTH=32")
+#endif(IDX64)
+#if(REAL64)
+#  set(METIS_COPTIONS "${METIS_COPTIONS} -DREALTYPEWIDTH=64")
+#else()
+#  set(METIS_COPTIONS "${METIS_COPTIONS} -DREALTYPEWIDTH=32")
+#endif(REAL64)
+#
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${METIS_COPTIONS}")
 
 
 # Add include directories.
 include_directories(${GKLIB_PATH})
-include_directories(include)
+include_directories(build/xinclude)
 # Recursively look for CMakeLists.txt in subdirs.
-add_subdirectory("include")
+add_subdirectory("build/xinclude")
 add_subdirectory("libmetis")
 add_subdirectory("programs")

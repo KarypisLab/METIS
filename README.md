@@ -64,7 +64,12 @@ Common configuration options are:
   cc=[compiler]   - The C compiler to use [default is determined by CMake]
   shared=1        - Build a shared library instead of a static one
                     [off by default]
-  prefix=[PATH]   - Set the installation prefix [/usr/local/ by default]
+  prefix=[PATH]   - Set the installation prefix [~/local by default]
+  i64=1           - Sets to 64 bits the width of the datatype that will 
+                    store information about the vertices and their adjacency
+                    lists. 
+  r64=1           - Sets to 64 bits the width of the datatype that will 
+                    store information about floating point numbers.
 ```
 
 Advanced debugging related options:
@@ -75,8 +80,6 @@ Advanced debugging related options:
   assert=1    - Enable asserts [off by default]
   assert2=1   - Enable very expensive asserts [off by default]
 ```
-
-METIS' index and real data type size can be configured by editing <tt>include/metis.h</tt>.
 
 
 
