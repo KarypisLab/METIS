@@ -17,8 +17,6 @@ cc         = not-set
 
 BUILDDIR = build
 
-IDXWIDTH  = "\#define IDXTYPEWIDTH 32"
-REALWIDTH = "\#define REALTYPEWIDTH 32"
 
 # Process configuration options.
 CONFIG_FLAGS = -DCMAKE_VERBOSE_MAKEFILE=1
@@ -28,11 +26,9 @@ endif
 CONFIG_FLAGS += -DGKLIB_PATH=$(abspath $(gklib_path))
 ifneq ($(i64), not-set)
     CONFIG_FLAGS += -DIDX64=$(i64)
-    IDXWIDTH  = "\#define IDXTYPEWIDTH 64"
 endif
 ifneq ($(r64), not-set)
     CONFIG_FLAGS += -DREAL64=$(r64)
-    REALWIDTH = "\#define REALTYPEWIDTH 64"
 endif
 ifneq ($(gdb), not-set)
     CONFIG_FLAGS += -DGDB=$(gdb)
@@ -67,11 +63,6 @@ PKGNAME=metis-$(VERNUM)
 
 define run-config
 mkdir -p $(BUILDDIR)
-mkdir -p $(BUILDDIR)/xinclude
-echo $(IDXWIDTH) > $(BUILDDIR)/xinclude/metis.h
-echo $(REALWIDTH) >> $(BUILDDIR)/xinclude/metis.h
-cat include/metis.h >> $(BUILDDIR)/xinclude/metis.h
-cp include/CMakeLists.txt $(BUILDDIR)/xinclude
 cd $(BUILDDIR) && cmake $(CURDIR) $(CONFIG_FLAGS)
 endef
 
