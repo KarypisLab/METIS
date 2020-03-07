@@ -40,6 +40,10 @@ include(${GKLIB_PATH}/GKlibSystem.cmake)
 include_directories(${GKLIB_PATH})
 include_directories(build/xinclude)
 # Recursively look for CMakeLists.txt in subdirs.
-add_subdirectory("build/xinclude")
 add_subdirectory("libmetis")
 add_subdirectory("programs")
+
+INSTALL (
+    DIRECTORY build/xinclude/
+    DESTINATION include
+    FILES_MATCHING PATTERN "*.h*")
