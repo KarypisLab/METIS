@@ -1,5 +1,7 @@
 # Add this directory for internal users.
 include_directories(.)
+# Find headers.
+file(GLOB metis_includes *.h)
 # Find sources.
 file(GLOB metis_sources *.c)
 # Build libmetis.
@@ -9,6 +11,10 @@ if(UNIX)
 endif()
 
 if(METIS_INSTALL)
+  install(FILES ${GKlib_includes}
+    DESTINATION include)
+  install(FILES ${metis_includes}
+    DESTINATION include)
   install(TARGETS metis
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION lib
