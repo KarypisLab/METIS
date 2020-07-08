@@ -15,9 +15,6 @@
 #ifndef _LIBMETIS_PROTO_H_
 #define _LIBMETIS_PROTO_H_
 
-#include <metis.h>
-#include "struct.h"
-
 /* auxapi.c */
 
 /* balance.c */
