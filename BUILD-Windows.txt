@@ -22,6 +22,13 @@ After you have found the appropriate generator, run
 to generate the project files. The project files will be placed
 build\windows.
 
+Finally, you need to manually uncomment the following two lines:
+
+    //#define IDXTYPEWIDTH 32
+    //#define REALTYPEWIDTH 32
+
+To compile METIS with 64 bit integers or 64 bit floats, you also need
+to set IDXTYPEWIDTH or REALTYPEWIDTH to 64.
 
 Using the CMake GUI
 -------------------
