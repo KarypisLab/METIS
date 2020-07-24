@@ -406,7 +406,7 @@ void graph_ReadFromDisk(ctrl_t *ctrl, graph_t *graph)
   }
 
   fclose(fpin);
-  printf("ondisk: deleting %s\n", infile);
+//  printf("ondisk: deleting %s\n", infile);
   gk_rmpath(infile);
 
   graph->gID    = 0;
