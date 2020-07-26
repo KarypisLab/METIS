@@ -148,8 +148,11 @@ void Project2WayPartition(ctrl_t *ctrl, graph_t *graph)
   idx_t *cwhere, *cbndptr;
   idx_t *id, *ed;
   graph_t *cgraph;
+  int dropedges;
 
   Allocate2WayPartitionMemory(ctrl, graph);
+
+  dropedges = ctrl->dropedges;
 
   cgraph  = graph->coarser;
   cwhere  = cgraph->where;
@@ -173,7 +176,7 @@ void Project2WayPartition(ctrl_t *ctrl, graph_t *graph)
   for (i=0; i<nvtxs; i++) {
     j = cmap[i];
     where[i] = cwhere[j];
-    cmap[i]  = cbndptr[j];
+    cmap[i]  = (dropedges ? 0 : cbndptr[j]);
   }
 
   /* Compute the refinement information of the nodes */
@@ -201,7 +204,7 @@ void Project2WayPartition(ctrl_t *ctrl, graph_t *graph)
     if (ted > 0 || istart == iend) 
       BNDInsert(nbnd, bndind, bndptr, i);
   }
-  graph->mincut = cgraph->mincut;
+  graph->mincut = (dropedges ? ComputeCut(graph, where) : cgraph->mincut);
   graph->nbnd   = nbnd;
 
   /* copy pwgts */

@@ -73,19 +73,20 @@ int main(int argc, char *argv[])
   part = imalloc(graph->nvtxs, "main: part");
 
   METIS_SetDefaultOptions(options);
-  options[METIS_OPTION_OBJTYPE] = params->objtype;
-  options[METIS_OPTION_CTYPE]   = params->ctype;
-  options[METIS_OPTION_IPTYPE]  = params->iptype;
-  options[METIS_OPTION_RTYPE]   = params->rtype;
-  options[METIS_OPTION_NO2HOP]  = params->no2hop;
-  options[METIS_OPTION_ONDISK]  = params->ondisk;
-  options[METIS_OPTION_MINCONN] = params->minconn;
-  options[METIS_OPTION_CONTIG]  = params->contig;
-  options[METIS_OPTION_SEED]    = params->seed;
-  options[METIS_OPTION_NITER]   = params->niter;
-  options[METIS_OPTION_NCUTS]   = params->ncuts;
-  options[METIS_OPTION_UFACTOR] = params->ufactor;
-  options[METIS_OPTION_DBGLVL]  = params->dbglvl;
+  options[METIS_OPTION_OBJTYPE]   = params->objtype;
+  options[METIS_OPTION_CTYPE]     = params->ctype;
+  options[METIS_OPTION_IPTYPE]    = params->iptype;
+  options[METIS_OPTION_RTYPE]     = params->rtype;
+  options[METIS_OPTION_NO2HOP]    = params->no2hop;
+  options[METIS_OPTION_ONDISK]    = params->ondisk;
+  options[METIS_OPTION_DROPEDGES] = params->dropedges;
+  options[METIS_OPTION_MINCONN]   = params->minconn;
+  options[METIS_OPTION_CONTIG]    = params->contig;
+  options[METIS_OPTION_SEED]      = params->seed;
+  options[METIS_OPTION_NITER]     = params->niter;
+  options[METIS_OPTION_NCUTS]     = params->ncuts;
+  options[METIS_OPTION_UFACTOR]   = params->ufactor;
+  options[METIS_OPTION_DBGLVL]    = params->dbglvl;
 
   gk_malloc_init();
   gk_startcputimer(params->parttimer);

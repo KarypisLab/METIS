@@ -116,11 +116,15 @@ typedef struct graph_t {
   /* Node refinement information */
   nrinfo_t *nrinfo;
 
-  struct graph_t *coarser, *finer;
-
   /* various fields for out-of-core processing */
   int gID;
   int ondisk;
+
+  /* keep track of the dropped edgewgt */
+  idx_t droppedewgt;
+
+  /* the linked-list structure of the sequence of graphs */
+  struct graph_t *coarser, *finer;
 
 } graph_t;
 
@@ -163,6 +167,7 @@ typedef struct ctrl_t {
   idx_t ncuts;                  /* The number of different partitionings to compute */
   idx_t niter;                  /* The number of iterations during each refinement */
   idx_t numflag;                /* The user-supplied numflag for the graph */
+  idx_t dropedges;              /* Indicates if edges will be randomly dropped during coarsening */
   idx_t *maxvwgt;		/* The maximum allowed weight for a vertex */
 
   idx_t ncon;                   /*!< The number of balancing constraints */

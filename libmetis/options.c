@@ -78,12 +78,13 @@ ctrl_t *SetupCtrl(moptype_et optype, idx_t *options, idx_t ncon, idx_t nparts,
   }
 
   /* common options */
-  ctrl->ctype   = GETOPTION(options, METIS_OPTION_CTYPE, METIS_CTYPE_SHEM);
-  ctrl->no2hop  = GETOPTION(options, METIS_OPTION_NO2HOP, 0);
-  ctrl->ondisk  = GETOPTION(options, METIS_OPTION_ONDISK, 0);
-  ctrl->seed    = GETOPTION(options, METIS_OPTION_SEED, -1);
-  ctrl->dbglvl  = GETOPTION(options, METIS_OPTION_DBGLVL, 0);
-  ctrl->numflag = GETOPTION(options, METIS_OPTION_NUMBERING, 0);
+  ctrl->ctype     = GETOPTION(options, METIS_OPTION_CTYPE, METIS_CTYPE_SHEM);
+  ctrl->no2hop    = GETOPTION(options, METIS_OPTION_NO2HOP, 0);
+  ctrl->ondisk    = GETOPTION(options, METIS_OPTION_ONDISK, 0);
+  ctrl->seed      = GETOPTION(options, METIS_OPTION_SEED, -1);
+  ctrl->dbglvl    = GETOPTION(options, METIS_OPTION_DBGLVL, 0);
+  ctrl->numflag   = GETOPTION(options, METIS_OPTION_NUMBERING, 0);
+  ctrl->dropedges = GETOPTION(options, METIS_OPTION_DROPEDGES, 0);
 
   /* set non-option information */
   ctrl->optype  = optype;
@@ -243,6 +244,7 @@ void PrintCtrl(ctrl_t *ctrl)
   printf("   Perform a 2-hop matching: %s\n", (ctrl->no2hop ? "No" : "Yes"));
 
   printf("   On disk storage: %s\n", (ctrl->ondisk ? "Yes" : "No"));
+  printf("   Drop edges: %s\n", (ctrl->dropedges ? "Yes" : "No"));
 
   printf("   Number of balancing constraints: %"PRIDX"\n", ctrl->ncon);
   printf("   Number of refinement iterations: %"PRIDX"\n", ctrl->niter);

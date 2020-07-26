@@ -275,6 +275,7 @@ typedef enum {
   METIS_OPTION_NSEPS,
   METIS_OPTION_UFACTOR,
   METIS_OPTION_NUMBERING,
+  METIS_OPTION_DROPEDGES,
 
   /* Used for command-line parameter purposes */
   METIS_OPTION_HELP,

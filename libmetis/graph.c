@@ -34,6 +34,7 @@ graph_t *SetupGraph(ctrl_t *ctrl, idx_t nvtxs, idx_t ncon, idx_t *xadj,
   graph->adjncy      = adjncy;
   graph->free_adjncy = 0;
 
+  graph->droppedewgt = 0;
 
   /* setup the vertex weights */
   if (vwgt) {

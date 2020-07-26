@@ -29,6 +29,8 @@ typedef struct {
 
   idx_t ondisk;
 
+  idx_t dropedges;
+
   idx_t nooutput;
 
   idx_t balance;

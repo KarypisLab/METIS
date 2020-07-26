@@ -177,11 +177,11 @@ void InitKWayPartitioning(ctrl_t *ctrl, graph_t *graph)
   int status;
 
   METIS_SetDefaultOptions(options);
-  options[METIS_OPTION_NITER]   = 10;
-  options[METIS_OPTION_OBJTYPE] = METIS_OBJTYPE_CUT;
-  options[METIS_OPTION_NO2HOP]  = ctrl->no2hop;
-  options[METIS_OPTION_ONDISK]  = ctrl->ondisk;
-
+  options[METIS_OPTION_NITER]     = 10;
+  options[METIS_OPTION_OBJTYPE]   = METIS_OBJTYPE_CUT;
+  options[METIS_OPTION_NO2HOP]    = ctrl->no2hop;
+  options[METIS_OPTION_ONDISK]    = ctrl->ondisk;
+  options[METIS_OPTION_DROPEDGES] = ctrl->dropedges;
 
   ubvec = rmalloc(graph->ncon, "InitKWayPartitioning: ubvec");
   for (i=0; i<graph->ncon; i++) 

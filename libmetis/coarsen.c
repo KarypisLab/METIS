@@ -828,18 +828,18 @@ void PrintCGraphStats(ctrl_t *ctrl, graph_t *graph)
 void CreateCoarseGraph(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs, 
          idx_t *match)
 {
-  idx_t j, jj, k, kk, l, m, istart, iend, nvtxs, nedges, ncon, cnedges, 
-        v, u, mask, dovsize;
+  idx_t j, jj, k, kk, l, m, istart, iend, nvtxs, nedges, ncon, cnedges, v, u;
   idx_t *xadj, *vwgt, *vsize, *adjncy, *adjwgt;
   idx_t *cmap, *htable;
   idx_t *cxadj, *cvwgt, *cvsize, *cadjncy, *cadjwgt;
   graph_t *cgraph;
+  int mask, dovsize;
 
   dovsize = (ctrl->objtype == METIS_OBJTYPE_VOL ? 1 : 0);
 
   /* Check if the mask-version of the code is a good choice */
   mask = HTLENGTH;
-  if (cnvtxs < 2*mask || graph->nedges/graph->nvtxs > mask/20) { 
+  if (1 || cnvtxs < 2*mask || graph->nedges/graph->nvtxs > mask/20) { 
     CreateCoarseGraphNoMask(ctrl, graph, cnvtxs, match);
     return;
   }
@@ -1007,15 +1007,19 @@ void CreateCoarseGraph(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs,
 void CreateCoarseGraphNoMask(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs, 
          idx_t *match)
 {
-  idx_t j, k, m, istart, iend, nvtxs, nedges, ncon, cnedges, v, u, dovsize;
+  idx_t j, k, m, istart, iend, v, u, nvtxs, nedges, ncon, cnedges;
   idx_t *xadj, *vwgt, *vsize, *adjncy, *adjwgt;
   idx_t *cmap, *htable;
   idx_t *cxadj, *cvwgt, *cvsize, *cadjncy, *cadjwgt;
   graph_t *cgraph;
+  int dovsize, dropedges;
+  idx_t cv, nkeep, droppedewgt;
+  ikv_t *kvpairs=NULL;
 
   WCOREPUSH;
 
-  dovsize = (ctrl->objtype == METIS_OBJTYPE_VOL ? 1 : 0);
+  dovsize   = (ctrl->objtype == METIS_OBJTYPE_VOL ? 1 : 0);
+  dropedges = ctrl->dropedges;
 
   IFSET(ctrl->dbglvl, METIS_DBG_TIME, gk_startcputimer(ctrl->ContractTmr));
 
@@ -1028,6 +1032,14 @@ void CreateCoarseGraphNoMask(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs,
   adjwgt  = graph->adjwgt;
   cmap    = graph->cmap;
 
+  /* Setup structures for dropedges */
+  if (dropedges) {
+    nkeep = xadj[1]; /* nkeep will store the max degree */
+    for (v=1; v<nvtxs; v++) {
+      nkeep = gk_max(nkeep, xadj[v+1]-xadj[v]);
+    }
+    kvpairs = ikvwspacemalloc(ctrl, 2*(nkeep+1));
+  }
 
   /* Initialize the coarser graph */
   cgraph = SetupCoarseGraph(graph, cnvtxs, dovsize);
@@ -1107,10 +1119,90 @@ void CreateCoarseGraphNoMask(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs,
     for (j=0; j<nedges; j++)
       htable[cadjncy[j]] = -1;  
 
-    cnedges         += nedges;
-    cxadj[++cnvtxs]  = cnedges;
+
+    /* Eliminate low-weight edges in order to keep the average degree of the contracted 
+       vertex the same as the original pair of vertices */
+    if (dropedges) {
+      nkeep = ((1+xadj[v+1]-xadj[v] + xadj[u+1]-xadj[u])>>1);
+      //printf("%d %d\n", (int)nkeep, (int)nedges); 
+
+      for (j=0; j<nedges; j++) {
+        kvpairs[j].val = j;
+        kvpairs[j].key = cadjwgt[j];
+      }
+      ikvsortd(nedges, kvpairs);
+
+      for (j=0; j<nedges; j++) {
+        cv = cadjncy[kvpairs[j].val]; /* coarse neighbor ID */
+        //printf("\t%d %d %d %d\n", (int)cnvtxs, (int)cv, (int)kvpairs[j].key, (int)kvpairs[j].val);
+        ASSERT(cnvtxs != cv);
+        if (cnvtxs < cv) {
+          if (j >= nkeep)
+            cadjwgt[kvpairs[j].val] = -kvpairs[j].key; /* tentative mark for removal */
+        }
+        else {
+          /* search the adjacency list of the coarse neighbor and keep that edge */
+          istart = cxadj[cv];
+          iend   = cxadj[cv+1];
+          for (k=istart; k<iend; k++) {
+            //printf("\t\t%d %d %d\n", (int)cv, (int)k, (int)cgraph->adjncy[k]); 
+            if (cgraph->adjncy[k] == cnvtxs) {
+
+#ifdef XXX
+              if (j >= nkeep) { /* mark for removal */
+                cadjwgt[kvpairs[j].val] = -kvpairs[j].key; 
+                cgraph->adjwgt[k]       = -kvpairs[j].key; 
+              }
+              else {
+                cadjwgt[kvpairs[j].val] = cgraph->adjwgt[k]; /* this will be -ve only if cadjwgt[k] is -ve */
+              }
+#endif
+
+              if (j < nkeep)
+                cgraph->adjwgt[k] = kvpairs[j].key; /* this will set the weight to be +ve */
+              else
+                cadjwgt[kvpairs[j].val] = cgraph->adjwgt[k]; /* this will be -ve only if cadjwgt[k] is -ve */
+
+              break;
+            }
+          }
+          ASSERT(k < iend); /* cnvtxs should always be in Adj(cv) */
+        }
+      }
+    }
+
+    /* Record Advance the cadjXXX pointers */
     cadjncy         += nedges;
     cadjwgt         += nedges;
+    cnedges         += nedges;
+    cxadj[++cnvtxs]  = cnedges;
+  }
+
+
+  /* compact the adjacency structure of the coarser graph to keep only +ve edges */
+  if (dropedges) { 
+    droppedewgt = 0;
+
+    cadjncy  = cgraph->adjncy;
+    cadjwgt  = cgraph->adjwgt;
+
+    cnedges = 0;
+    for (u=0; u<cnvtxs; u++) {
+      istart = cxadj[u];
+      iend   = cxadj[u+1];
+      for (j=istart; j<iend; j++) {
+        if (cadjwgt[j] >= 0) {
+          cadjncy[cnedges]   = cadjncy[j];
+          cadjwgt[cnedges++] = cadjwgt[j];
+        }
+        else 
+          droppedewgt += -cadjwgt[j];
+      }
+      cxadj[u] = cnedges;
+    }
+    SHIFTCSR(j, cnvtxs, cxadj);
+
+    cgraph->droppedewgt = droppedewgt;
   }
 
   cgraph->nedges = cnedges;
@@ -1297,7 +1389,7 @@ void CreateCoarseGraphPerm(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs,
 /*! Setup the various arrays for the coarse graph 
  */
 /*************************************************************************/
-graph_t *SetupCoarseGraph(graph_t *graph, idx_t cnvtxs, idx_t dovsize)
+graph_t *SetupCoarseGraph(graph_t *graph, idx_t cnvtxs, int dovsize)
 {
   graph_t *cgraph;
 
@@ -1308,7 +1400,6 @@ graph_t *SetupCoarseGraph(graph_t *graph, idx_t cnvtxs, idx_t dovsize)
 
   cgraph->finer  = graph;
   graph->coarser = cgraph;
-
 
   /* Allocate memory for the coarser graph */
   cgraph->xadj     = imalloc(cnvtxs+1, "SetupCoarseGraph: xadj");

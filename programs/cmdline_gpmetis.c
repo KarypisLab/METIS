@@ -29,6 +29,8 @@ static struct gk_option long_options[] = {
 
   {"ondisk",         0,      0,      METIS_OPTION_ONDISK},
 
+  {"dropedges",      0,      0,      METIS_OPTION_DROPEDGES},
+
   {"nooutput",       0,      0,      METIS_OPTION_NOOUTPUT},
 
   {"ufactor",        1,      0,      METIS_OPTION_UFACTOR},
@@ -243,6 +245,8 @@ params_t *parse_cmdline(int argc, char *argv[])
 
   params->ondisk        = 0;
 
+  params->dropedges     = 0;
+
   params->nooutput      = 0;
   params->wgtflag       = 3;
 
@@ -316,6 +320,10 @@ params_t *parse_cmdline(int argc, char *argv[])
 
       case METIS_OPTION_ONDISK:
         params->ondisk = 1;
+        break;
+
+      case METIS_OPTION_DROPEDGES:
+        params->dropedges = 1;
         break;
 
       case METIS_OPTION_NOOUTPUT:
