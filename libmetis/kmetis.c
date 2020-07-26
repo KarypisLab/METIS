@@ -180,6 +180,7 @@ void InitKWayPartitioning(ctrl_t *ctrl, graph_t *graph)
   options[METIS_OPTION_NITER]   = 10;
   options[METIS_OPTION_OBJTYPE] = METIS_OBJTYPE_CUT;
   options[METIS_OPTION_NO2HOP]  = ctrl->no2hop;
+  options[METIS_OPTION_ONDISK]  = ctrl->ondisk;
 
 
   ubvec = rmalloc(graph->ncon, "InitKWayPartitioning: ubvec");

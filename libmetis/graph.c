@@ -307,24 +307,24 @@ void graph_WriteToDisk(ctrl_t *ctrl, graph_t *graph)
 
   if (graph->free_xadj) {
     if (fwrite(graph->xadj, sizeof(idx_t), nvtxs+1, fpout) != nvtxs+1)
-      goto ERROR;
+      goto error;
   }
   if (graph->free_vwgt) {
     if (fwrite(graph->vwgt, sizeof(idx_t), nvtxs*ncon, fpout) != nvtxs*ncon)
-      goto ERROR;
+      goto error;
   }
   if (graph->free_adjncy) {
     if (fwrite(graph->adjncy, sizeof(idx_t), xadj[nvtxs], fpout) != xadj[nvtxs])
-      goto ERROR;
+      goto error;
   }
   if (graph->free_adjwgt) {
     if (fwrite(graph->adjwgt, sizeof(idx_t), xadj[nvtxs], fpout) != xadj[nvtxs])
-      goto ERROR;
+      goto error;
   }
   if (ctrl->objtype == METIS_OBJTYPE_VOL) { 
     if (graph->free_vsize) {
       if (fwrite(graph->vsize, sizeof(idx_t), nvtxs, fpout) != nvtxs)
-        goto ERROR;
+        goto error;
     }
   }
 
@@ -344,7 +344,7 @@ void graph_WriteToDisk(ctrl_t *ctrl, graph_t *graph)
   graph->ondisk = 1;
   return;
 
-ERROR:
+error:
   printf("Failed on writing %s\n", outfile);
   fclose(fpout);
   gk_rmpath(outfile);
@@ -375,45 +375,45 @@ void graph_ReadFromDisk(ctrl_t *ctrl, graph_t *graph)
   if (graph->free_xadj) {
     graph->xadj = imalloc(nvtxs+1, "graph_ReadFromDisk: xadj");
     if (fread(graph->xadj, sizeof(idx_t), nvtxs+1, fpin) != nvtxs+1)
-      goto ERROR;
+      goto error;
   }
   xadj = graph->xadj;
 
   if (graph->free_vwgt) {
     graph->vwgt = imalloc(nvtxs*ncon, "graph_ReadFromDisk: vwgt");
     if (fread(graph->vwgt, sizeof(idx_t), nvtxs*ncon, fpin) != nvtxs*ncon)
-      goto ERROR;
+      goto error;
   }
 
   if (graph->free_adjncy) {
     graph->adjncy = imalloc(xadj[nvtxs], "graph_ReadFromDisk: adjncy");
     if (fread(graph->adjncy, sizeof(idx_t), xadj[nvtxs], fpin) != xadj[nvtxs])
-      goto ERROR;
+      goto error;
   }
 
   if (graph->free_adjwgt) {
     graph->adjwgt = imalloc(xadj[nvtxs], "graph_ReadFromDisk: adjwgt");
     if (fread(graph->adjwgt, sizeof(idx_t), xadj[nvtxs], fpin) != xadj[nvtxs])
-      goto ERROR;
+      goto error;
   }
 
   if (ctrl->objtype == METIS_OBJTYPE_VOL) {
     if (graph->free_vsize) {
       graph->vsize = imalloc(nvtxs, "graph_ReadFromDisk: vsize");
       if (fread(graph->vsize, sizeof(idx_t), nvtxs, fpin) != nvtxs)
-        goto ERROR;
+        goto error;
     }
   }
 
   fclose(fpin);
-  printf("ondisk: deleting %s\n", infile);
+//  printf("ondisk: deleting %s\n", infile);
   gk_rmpath(infile);
 
   graph->gID    = 0;
   graph->ondisk = 0;
   return;
 
-ERROR:
+error:
   fclose(fpin);
   gk_rmpath(infile);
   graph->ondisk = 0;
