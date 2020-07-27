@@ -145,6 +145,8 @@ void GrowBisectionNode2(ctrl_t *ctrl, graph_t *graph, real_t *ntpwgts, idx_t nip
 /* kmetis.c */
 idx_t MlevelKWayPartitioning(ctrl_t *ctrl, graph_t *graph, idx_t *part);
 void InitKWayPartitioning(ctrl_t *ctrl, graph_t *graph);
+idx_t GrowMultisection(ctrl_t *ctrl, graph_t *graph, idx_t nparts, idx_t *where);
+void BalanceAndRefineLP(ctrl_t *ctrl, graph_t *graph, idx_t nparts, idx_t *where);
 
 
 /* kwayfm.c */

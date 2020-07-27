@@ -68,7 +68,17 @@ int METIS_PartGraphKway(idx_t *nvtxs, idx_t *ncon, idx_t *xadj, idx_t *adjncy,
   IFSET(ctrl->dbglvl, METIS_DBG_TIME, InitTimers(ctrl));
   IFSET(ctrl->dbglvl, METIS_DBG_TIME, gk_startcputimer(ctrl->TotalTmr));
 
-  *objval = MlevelKWayPartitioning(ctrl, graph, part);
+  if (ctrl->dbglvl&512) {
+    idx_t mynparts=sqrt(graph->nvtxs);;
+
+    mynparts = GrowMultisection(ctrl, graph, mynparts, part);
+    BalanceAndRefineLP(ctrl, graph, mynparts, part);
+
+    *nparts = mynparts;
+  }
+  else {
+    *objval = MlevelKWayPartitioning(ctrl, graph, part);
+  }
 
   IFSET(ctrl->dbglvl, METIS_DBG_TIME, gk_stopcputimer(ctrl->TotalTmr));
   IFSET(ctrl->dbglvl, METIS_DBG_TIME, PrintTimers(ctrl));
@@ -177,7 +187,8 @@ void InitKWayPartitioning(ctrl_t *ctrl, graph_t *graph)
   int status;
 
   METIS_SetDefaultOptions(options);
-  options[METIS_OPTION_NITER]     = 10;
+  //options[METIS_OPTION_NITER]     = 10;
+  options[METIS_OPTION_NITER]     = ctrl->niter;
   options[METIS_OPTION_OBJTYPE]   = METIS_OBJTYPE_CUT;
   options[METIS_OPTION_NO2HOP]    = ctrl->no2hop;
   options[METIS_OPTION_ONDISK]    = ctrl->ondisk;
@@ -241,4 +252,300 @@ void InitKWayPartitioning(ctrl_t *ctrl, graph_t *graph)
 
 }
 
+
+/*************************************************************************/
+/*! This function computes the initial k-way partitioning using multi-BFS
+*/
+/*************************************************************************/
+void InitKWayPartitioningMultiBFS(ctrl_t *ctrl, graph_t *graph)
+{
+  idx_t i, ntrials, options[METIS_NOPTIONS], curobj=0, bestobj=0;
+  idx_t *bestwhere=NULL;
+  real_t *ubvec=NULL;
+  int status;
+
+  METIS_SetDefaultOptions(options);
+  //options[METIS_OPTION_NITER]     = 10;
+  options[METIS_OPTION_NITER]     = ctrl->niter;
+  options[METIS_OPTION_OBJTYPE]   = METIS_OBJTYPE_CUT;
+  options[METIS_OPTION_NO2HOP]    = ctrl->no2hop;
+  options[METIS_OPTION_ONDISK]    = ctrl->ondisk;
+  options[METIS_OPTION_DROPEDGES] = ctrl->dropedges;
+
+  ubvec = rmalloc(graph->ncon, "InitKWayPartitioning: ubvec");
+  for (i=0; i<graph->ncon; i++) 
+    ubvec[i] = (real_t)pow(ctrl->ubfactors[i], 1.0/log(ctrl->nparts));
+
+
+  switch (ctrl->objtype) {
+    case METIS_OBJTYPE_CUT:
+    case METIS_OBJTYPE_VOL:
+      options[METIS_OPTION_NCUTS] = ctrl->nIparts;
+      status = METIS_PartGraphRecursive(&graph->nvtxs, &graph->ncon, 
+                   graph->xadj, graph->adjncy, graph->vwgt, graph->vsize, 
+                   graph->adjwgt, &ctrl->nparts, ctrl->tpwgts, ubvec, 
+                   options, &curobj, graph->where);
+
+      if (status != METIS_OK)
+        gk_errexit(SIGERR, "Failed during initial partitioning\n");
+
+      break;
+
+#ifdef XXX /* This does not seem to help */
+    case METIS_OBJTYPE_VOL:
+      bestwhere = imalloc(graph->nvtxs, "InitKWayPartitioning: bestwhere");
+      options[METIS_OPTION_NCUTS] = 2;
+
+      ntrials = (ctrl->nIparts+1)/2;
+      for (i=0; i<ntrials; i++) {
+        status = METIS_PartGraphRecursive(&graph->nvtxs, &graph->ncon, 
+                     graph->xadj, graph->adjncy, graph->vwgt, graph->vsize, 
+                     graph->adjwgt, &ctrl->nparts, ctrl->tpwgts, ubvec, 
+                     options, &curobj, graph->where);
+        if (status != METIS_OK)
+          gk_errexit(SIGERR, "Failed during initial partitioning\n");
+
+        curobj = ComputeVolume(graph, graph->where);
+
+        if (i == 0 || bestobj > curobj) {
+          bestobj = curobj;
+          if (i < ntrials-1)
+            icopy(graph->nvtxs, graph->where, bestwhere);
+        }
+
+        if (bestobj == 0)
+          break;
+      }
+      if (bestobj != curobj)
+        icopy(graph->nvtxs, bestwhere, graph->where);
+
+      break;
+#endif
+
+    default:
+      gk_errexit(SIGERR, "Unknown objtype: %d\n", ctrl->objtype);
+  }
+
+  gk_free((void **)&ubvec, &bestwhere, LTERM);
+
+}
+
+
+/*************************************************************************/
+/*! This function takes a graph and produces a bisection by using a region
+    growing algorithm. The resulting bisection is refined using FM.
+    The resulting partition is returned in graph->where.
+*/
+/*************************************************************************/
+idx_t GrowMultisection(ctrl_t *ctrl, graph_t *graph, idx_t nparts, idx_t *where)
+{
+  idx_t i, j, k, nvtxs, nleft, first, last; 
+  idx_t *xadj, *adjncy;
+  idx_t *queue;
+
+  WCOREPUSH;
+
+  nvtxs  = graph->nvtxs;
+  xadj   = graph->xadj;
+  adjncy = graph->adjncy;
+
+  queue   = iwspacemalloc(ctrl, nvtxs);
+
+  /* Select the seeds for the nparts-way BFS */
+  for (nleft=0, i=0; i<nvtxs; i++) {
+    if (xadj[i+1]-xadj[i] > 1) /* a seed's degree should be > 1 */
+      where[nleft++] = i;
+  }
+  nparts = gk_min(nparts, nleft);
+  for (i=0; i<nparts; i++) {
+    j = irandInRange(nleft);
+    queue[i] = where[j];
+    where[j] = --nleft;
+  }
+
+  iset(nvtxs, -1, where);
+  for (i=0; i<nparts; i++) 
+    where[queue[i]] = i;
+
+  first = 0; 
+  last  = nparts;
+  nleft = nvtxs-nparts;
+
+  /* Start the BFS from queue to get a partition */
+  while (first < last) { 
+    i = queue[first++];
+    for (j=xadj[i]; j<xadj[i+1]; j++) {
+      k = adjncy[j];
+      if (where[k] == -1) {
+        where[k] = where[i];
+        queue[last++] = k;
+        nleft--;
+      }
+    }
+  }
+  
+  /* Assign the unassigned vertices randomly to the nparts partitions */
+  if (nleft > 0) { 
+    for (i=0; i<nvtxs; i++) {
+      if (where[i] == -1)
+        where[i] = irandInRange(nparts);
+    }
+  }
+
+  WCOREPOP;
+
+  return nparts;
+}
+
+
+/*************************************************************************/
+/*! This function balances the partitioning using label propagation. 
+*/
+/*************************************************************************/
+void BalanceAndRefineLP(ctrl_t *ctrl, graph_t *graph, idx_t nparts, idx_t *where)
+{
+  idx_t ii, i, j, k, u, v, nvtxs, iter; 
+  idx_t *xadj, *vwgt, *adjncy, *adjwgt;
+  idx_t tvwgt, *pwgts, maxpwgt, minpwgt;
+  idx_t *perm;
+  idx_t from, to, nmoves, nnbrs, *nbrids, *nbrwgts, *nbrmrks;
+  real_t ubfactor;
+
+  WCOREPUSH;
+
+  nvtxs  = graph->nvtxs;
+  xadj   = graph->xadj;
+  vwgt   = graph->vwgt;
+  adjncy = graph->adjncy;
+  adjwgt = graph->adjwgt;
+
+  pwgts    = iset(nparts, 0, iwspacemalloc(ctrl, nparts));
+
+  ubfactor = I2RUBFACTOR(ctrl->ufactor);
+  tvwgt    = isum(nvtxs, vwgt, 1);
+  maxpwgt  = (ubfactor*tvwgt)/nparts;
+  minpwgt  = (1.0*tvwgt)/(ubfactor*nparts);
+
+  for (i=0; i<nvtxs; i++)
+    pwgts[where[i]] += vwgt[i];
+
+  /* for randomly visiting the vertices */
+  perm = iincset(nvtxs, 0, iwspacemalloc(ctrl, nvtxs));
+
+  /* for keeping track of adjancent partitions */
+  nbrids  = iwspacemalloc(ctrl, nparts);
+  nbrwgts = iset(nparts, 0, iwspacemalloc(ctrl, nparts));
+  nbrmrks = iset(nparts, -1, iwspacemalloc(ctrl, nparts));
+
+  /* perform a fixed number of balancing LP iterations */
+  for (iter=0; iter<10; iter++) {
+    printf("BLP: nparts: %"PRIDX", min-max: [%"PRIDX", %"PRIDX"], bal: %.4"PRREAL", cut: %6"PRIDX"\n",
+        nparts, minpwgt, maxpwgt, 1.0*imax(nparts, pwgts, 1)*nparts/tvwgt, ComputeCut(graph, where));
+
+    if (imax(nparts, pwgts, 1)*nparts < ubfactor*tvwgt)
+      break;
+
+    irandArrayPermute(nvtxs, perm, nvtxs/8, 0);
+    nmoves = 0;
+
+    for (ii=0; ii<nvtxs; ii++) {
+      u = perm[ii];
+
+      from = where[u];
+      if (pwgts[from] - vwgt[u] < minpwgt)
+        continue;
+
+      nnbrs = 0;
+      for (j=xadj[u]; j<xadj[u+1]; j++) {
+        v  = adjncy[j];
+        to = where[v];
+
+        if (pwgts[to] + vwgt[u] > maxpwgt)
+          continue; /* skip if 'to' is overweight */
+
+        if ((k = nbrmrks[to]) == -1) {
+          nbrmrks[to] = k = nnbrs++;
+          nbrids[k] = to;
+        }
+        nbrwgts[k] += xadj[v+1]-xadj[v];
+      }
+      if (nnbrs == 0)
+        continue;
+
+      to = nbrids[iargmax(nnbrs, nbrwgts, 1)];
+      if (from != to) {
+        where[u] = to;
+        INC_DEC(pwgts[to], pwgts[from], vwgt[u]);
+        nmoves++;
+      }
+
+      for (k=0; k<nnbrs; k++) {
+        nbrmrks[nbrids[k]] = -1;
+        nbrwgts[k] = 0;
+      }
+
+    }
+
+    printf("     nmoves: %6"PRIDX", bal: %.4"PRREAL", cut: %6"PRIDX"\n",
+        nmoves, 1.0*imax(nparts, pwgts, 1)*nparts/tvwgt, ComputeCut(graph, where));
+
+    if (nmoves == 0)
+      break;
+  }
+
+  /* perform a fixed number of refinement LP iterations */
+  for (iter=0; iter<ctrl->niter; iter++) {
+    printf("RLP: nparts: %"PRIDX", min-max: [%"PRIDX", %"PRIDX"], bal: %.4"PRREAL", cut: %6"PRIDX"\n",
+        nparts, minpwgt, maxpwgt, 1.0*imax(nparts, pwgts, 1)*nparts/tvwgt, ComputeCut(graph, where));
+
+    irandArrayPermute(nvtxs, perm, nvtxs/8, 0);
+    nmoves = 0;
+
+    for (ii=0; ii<nvtxs; ii++) {
+      u = perm[ii];
+
+      from = where[u];
+      if (pwgts[from] - vwgt[u] < minpwgt)
+        continue;
+
+      nnbrs = 0;
+      for (j=xadj[u]; j<xadj[u+1]; j++) {
+        v  = adjncy[j];
+        to = where[v];
+
+        if (to != from && pwgts[to] + vwgt[u] > maxpwgt)
+          continue; /* skip if 'to' is overweight */
+
+        if ((k = nbrmrks[to]) == -1) {
+          nbrmrks[to] = k = nnbrs++;
+          nbrids[k] = to;
+        }
+        nbrwgts[k] += adjwgt[j];
+      }
+      if (nnbrs == 0)
+        continue;
+
+      to = nbrids[iargmax(nnbrs, nbrwgts, 1)];
+      if (from != to) {
+        where[u] = to;
+        INC_DEC(pwgts[to], pwgts[from], vwgt[u]);
+        nmoves++;
+      }
+
+      for (k=0; k<nnbrs; k++) {
+        nbrmrks[nbrids[k]] = -1;
+        nbrwgts[k] = 0;
+      }
+
+    }
+
+    printf("     nmoves: %6"PRIDX", bal: %.4"PRREAL", cut: %6"PRIDX"\n",
+        nmoves, 1.0*imax(nparts, pwgts, 1)*nparts/tvwgt, ComputeCut(graph, where));
+
+    if (nmoves == 0)
+      break;
+  }
+
+  WCOREPOP;
+}
 
