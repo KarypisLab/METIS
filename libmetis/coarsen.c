@@ -833,9 +833,12 @@ void CreateCoarseGraph(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs,
   idx_t *cmap, *htable;
   idx_t *cxadj, *cvwgt, *cvsize, *cadjncy, *cadjwgt;
   graph_t *cgraph;
-  int mask, dovsize;
+  int mask, dovsize, dropedges;
+  idx_t cv, nkeep, droppedewgt;
+  idx_t *keys=NULL, *medianewgts=NULL, *noise=NULL;
 
-  dovsize = (ctrl->objtype == METIS_OBJTYPE_VOL ? 1 : 0);
+  dovsize   = (ctrl->objtype == METIS_OBJTYPE_VOL ? 1 : 0);
+  dropedges = ctrl->dropedges;
 
   /* Check if the mask-version of the code is a good choice */
   mask = HTLENGTH;
@@ -864,6 +867,19 @@ void CreateCoarseGraph(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs,
   adjncy  = graph->adjncy;
   adjwgt  = graph->adjwgt;
   cmap    = graph->cmap;
+
+  /* Setup structures for dropedges */
+  if (dropedges) {
+    for (nkeep=-1, v=0; v<nvtxs; v++) 
+      nkeep = gk_max(nkeep, xadj[v+1]-xadj[v]);
+
+    medianewgts = iwspacemalloc(ctrl, cnvtxs);
+    noise       = iwspacemalloc(ctrl, cnvtxs);
+    keys        = iwspacemalloc(ctrl, 2*(nkeep+1));
+
+    for (v=0; v<cnvtxs; v++) 
+      noise[v] = irandInRange(128);
+  }
 
   /* Initialize the coarser graph */
   cgraph   = SetupCoarseGraph(graph, cnvtxs, dovsize);
@@ -976,10 +992,48 @@ void CreateCoarseGraph(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs,
       htable[cadjncy[j]&mask] = -1;  
     htable[cnvtxs&mask] = -1;
 
-    cnedges         += nedges;
-    cxadj[++cnvtxs]  = cnedges;
+    /* Determine the median weight of the incident edges, which will be used
+       to keep an edge (u, v) iff wgt(u, v) >= min(medianewgts[u], medianewgts[v]) */
+    if (dropedges) {
+      for (j=0; j<nedges; j++) 
+        keys[j] = (cadjwgt[j]<<8) + noise[cnvtxs] + noise[cadjncy[j]];
+      isortd(nedges, keys);
+      medianewgts[cnvtxs] = keys[((xadj[v+1]-xadj[v] + xadj[u+1]-xadj[u])>>1)];
+    }
+
     cadjncy         += nedges;
     cadjwgt         += nedges;
+    cnedges         += nedges;
+    cxadj[++cnvtxs]  = cnedges;
+  }
+
+  /* compact the adjacency structure of the coarser graph to keep only +ve edges */
+  if (dropedges) { 
+    droppedewgt = 0;
+
+    cadjncy  = cgraph->adjncy;
+    cadjwgt  = cgraph->adjwgt;
+
+    cnedges = 0;
+    for (u=0; u<cnvtxs; u++) {
+      istart = cxadj[u];
+      iend   = cxadj[u+1];
+      for (j=istart; j<iend; j++) {
+        v = cadjncy[j];
+        if ((cadjwgt[j]<<8) + noise[u] + noise[v] >= gk_min(medianewgts[u], medianewgts[v])) {
+          cadjncy[cnedges]   = cadjncy[j];
+          cadjwgt[cnedges++] = cadjwgt[j];
+        }
+        else 
+          droppedewgt += cadjwgt[j];
+      }
+      cxadj[u] = cnedges;
+    }
+    SHIFTCSR(j, cnvtxs, cxadj);
+
+    //printf("droppedewgt: %d\n", (int)droppedewgt);
+
+    cgraph->droppedewgt = droppedewgt;
   }
 
   cgraph->nedges = cnedges;
@@ -1004,7 +1058,7 @@ void CreateCoarseGraph(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs,
     the same node.  
  */
 /*************************************************************************/
-void CreateCoarseGraphNoMask(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs, 
+void CreateCoarseGraphNoMask0(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs, 
          idx_t *match)
 {
   idx_t j, k, m, istart, iend, v, u, nvtxs, nedges, ncon, cnedges;
@@ -1201,6 +1255,193 @@ void CreateCoarseGraphNoMask(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs,
       cxadj[u] = cnedges;
     }
     SHIFTCSR(j, cnvtxs, cxadj);
+
+    cgraph->droppedewgt = droppedewgt;
+  }
+
+  cgraph->nedges = cnedges;
+
+  for (j=0; j<ncon; j++) {
+    cgraph->tvwgt[j]    = isum(cgraph->nvtxs, cgraph->vwgt+j, ncon);
+    cgraph->invtvwgt[j] = 1.0/(cgraph->tvwgt[j] > 0 ? cgraph->tvwgt[j] : 1);
+  }
+
+  ReAdjustMemory(ctrl, graph, cgraph);
+
+  IFSET(ctrl->dbglvl, METIS_DBG_TIME, gk_stopcputimer(ctrl->ContractTmr));
+
+  WCOREPOP;
+}
+
+
+/*************************************************************************/
+/*! This function creates the coarser graph. It uses a full-size array
+    (htable) for identifying the adjacent vertices that get collapsed to 
+    the same node.  
+ */
+/*************************************************************************/
+void CreateCoarseGraphNoMask(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs, 
+         idx_t *match)
+{
+  idx_t j, k, m, istart, iend, v, u, nvtxs, nedges, ncon, cnedges;
+  idx_t *xadj, *vwgt, *vsize, *adjncy, *adjwgt;
+  idx_t *cmap, *htable;
+  idx_t *cxadj, *cvwgt, *cvsize, *cadjncy, *cadjwgt;
+  graph_t *cgraph;
+  int dovsize, dropedges;
+  idx_t cv, nkeep, droppedewgt;
+  idx_t *keys=NULL, *medianewgts=NULL, *noise=NULL;
+
+  WCOREPUSH;
+
+  dovsize   = (ctrl->objtype == METIS_OBJTYPE_VOL ? 1 : 0);
+  dropedges = ctrl->dropedges;
+
+  IFSET(ctrl->dbglvl, METIS_DBG_TIME, gk_startcputimer(ctrl->ContractTmr));
+
+  nvtxs   = graph->nvtxs;
+  ncon    = graph->ncon;
+  xadj    = graph->xadj;
+  vwgt    = graph->vwgt;
+  vsize   = graph->vsize;
+  adjncy  = graph->adjncy;
+  adjwgt  = graph->adjwgt;
+  cmap    = graph->cmap;
+
+  /* Setup structures for dropedges */
+  if (dropedges) {
+    for (nkeep=-1, v=0; v<nvtxs; v++) 
+      nkeep = gk_max(nkeep, xadj[v+1]-xadj[v]);
+
+    medianewgts = iwspacemalloc(ctrl, cnvtxs);
+    noise       = iwspacemalloc(ctrl, cnvtxs);
+    keys        = iwspacemalloc(ctrl, 2*(nkeep+1));
+
+    for (v=0; v<cnvtxs; v++) 
+      noise[v] = irandInRange(128);
+  }
+
+  /* Initialize the coarser graph */
+  cgraph = SetupCoarseGraph(graph, cnvtxs, dovsize);
+  cxadj    = cgraph->xadj;
+  cvwgt    = cgraph->vwgt;
+  cvsize   = cgraph->vsize;
+  cadjncy  = cgraph->adjncy;
+  cadjwgt  = cgraph->adjwgt;
+
+  htable = iset(cnvtxs, -1, iwspacemalloc(ctrl, cnvtxs));
+
+  cxadj[0] = cnvtxs = cnedges = 0;
+  for (v=0; v<nvtxs; v++) {
+    if ((u = match[v]) < v)
+      continue;
+
+    ASSERT(cmap[v] == cnvtxs);
+    ASSERT(cmap[match[v]] == cnvtxs);
+
+    if (ncon == 1)
+      cvwgt[cnvtxs] = vwgt[v];
+    else
+      icopy(ncon, vwgt+v*ncon, cvwgt+cnvtxs*ncon);
+
+    if (dovsize)
+      cvsize[cnvtxs] = vsize[v];
+
+    nedges = 0;
+
+    istart = xadj[v];
+    iend   = xadj[v+1];
+    for (j=istart; j<iend; j++) {
+      k = cmap[adjncy[j]];
+      if ((m = htable[k]) == -1) {
+        cadjncy[nedges] = k;
+        cadjwgt[nedges] = adjwgt[j];
+        htable[k] = nedges++;
+      }
+      else {
+        cadjwgt[m] += adjwgt[j];
+      }
+    }
+
+    if (v != u) { 
+      if (ncon == 1)
+        cvwgt[cnvtxs] += vwgt[u];
+      else
+        iaxpy(ncon, 1, vwgt+u*ncon, 1, cvwgt+cnvtxs*ncon, 1);
+
+      if (dovsize)
+        cvsize[cnvtxs] += vsize[u];
+
+      istart = xadj[u];
+      iend   = xadj[u+1];
+      for (j=istart; j<iend; j++) {
+        k = cmap[adjncy[j]];
+        if ((m = htable[k]) == -1) {
+          cadjncy[nedges] = k;
+          cadjwgt[nedges] = adjwgt[j];
+          htable[k] = nedges++;
+        }
+        else {
+          cadjwgt[m] += adjwgt[j];
+        }
+      }
+
+      /* Remove the contracted adjacency weight */
+      if ((j = htable[cnvtxs]) != -1) {
+        ASSERT(cadjncy[j] == cnvtxs);
+        cadjncy[j]        = cadjncy[--nedges];
+        cadjwgt[j]        = cadjwgt[nedges];
+        htable[cnvtxs] = -1;
+      }
+    }
+
+    /* Zero out the htable */
+    for (j=0; j<nedges; j++)
+      htable[cadjncy[j]] = -1;  
+
+
+    /* Determine the median weight of the incident edges, which will be used
+       to keep an edge (u, v) iff wgt(u, v) >= min(medianewgts[u], medianewgts[v]) */
+    if (dropedges) {
+      for (j=0; j<nedges; j++) 
+        keys[j] = (cadjwgt[j]<<8) + noise[cnvtxs] + noise[cadjncy[j]];
+      isortd(nedges, keys);
+      medianewgts[cnvtxs] = keys[((xadj[v+1]-xadj[v] + xadj[u+1]-xadj[u])>>1)];
+    }
+
+    /* Record Advance the cadjXXX pointers */
+    cadjncy         += nedges;
+    cadjwgt         += nedges;
+    cnedges         += nedges;
+    cxadj[++cnvtxs]  = cnedges;
+  }
+
+
+  /* compact the adjacency structure of the coarser graph to keep only +ve edges */
+  if (dropedges) { 
+    droppedewgt = 0;
+
+    cadjncy  = cgraph->adjncy;
+    cadjwgt  = cgraph->adjwgt;
+
+    cnedges = 0;
+    for (u=0; u<cnvtxs; u++) {
+      istart = cxadj[u];
+      iend   = cxadj[u+1];
+      for (j=istart; j<iend; j++) {
+        v = cadjncy[j];
+        if ((cadjwgt[j]<<8) + noise[u] + noise[v] >= gk_min(medianewgts[u], medianewgts[v])) {
+          cadjncy[cnedges]   = cadjncy[j];
+          cadjwgt[cnedges++] = cadjwgt[j];
+        }
+        else 
+          droppedewgt += cadjwgt[j];
+      }
+      cxadj[u] = cnedges;
+    }
+    SHIFTCSR(j, cnvtxs, cxadj);
+
+    //printf("droppedewgt: %d\n", (int)droppedewgt);
 
     cgraph->droppedewgt = droppedewgt;
   }
