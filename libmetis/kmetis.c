@@ -71,7 +71,7 @@ int METIS_PartGraphKway(idx_t *nvtxs, idx_t *ncon, idx_t *xadj, idx_t *adjncy,
   if (ctrl->dbglvl&512) {
     idx_t mynparts=sqrt(graph->nvtxs);;
 
-    mynparts = GrowMultisection(ctrl, graph, mynparts, part);
+    mynparts = GrowMultisection(ctrl, graph, *nparts, part);
     BalanceAndRefineLP(ctrl, graph, mynparts, part);
     //BalanceAndRefine(ctrl, graph, mynparts, part);
 
@@ -262,7 +262,7 @@ void InitKWayPartitioning(ctrl_t *ctrl, graph_t *graph)
 /*************************************************************************/
 idx_t GrowMultisection(ctrl_t *ctrl, graph_t *graph, idx_t nparts, idx_t *where)
 {
-  idx_t i, j, k, nvtxs, nleft, first, last; 
+  idx_t i, j, k, l, nvtxs, nleft, first, last; 
   idx_t *xadj, *vwgt, *adjncy;
   idx_t *queue;
   idx_t tvwgt, maxpwgt, *pwgts;
@@ -291,7 +291,7 @@ idx_t GrowMultisection(ctrl_t *ctrl, graph_t *graph, idx_t nparts, idx_t *where)
 
   pwgts   = iset(nparts, 0, iwspacemalloc(ctrl, nparts));
   tvwgt   = isum(nvtxs, vwgt, 1);
-  maxpwgt = (2.0*tvwgt)/nparts;
+  maxpwgt = (1.5*tvwgt)/nparts;
 
   iset(nvtxs, -1, where);
   for (i=0; i<nparts; i++) { 
@@ -307,14 +307,17 @@ idx_t GrowMultisection(ctrl_t *ctrl, graph_t *graph, idx_t nparts, idx_t *where)
   /* Start the BFS from queue to get a partition */
   while (first < last) { 
     i = queue[first++];
-    if (pwgts[where[i]] > maxpwgt)
+    l = where[i];
+    if (pwgts[l] > maxpwgt)
       continue;
 
     for (j=xadj[i]; j<xadj[i+1]; j++) {
       k = adjncy[j];
       if (where[k] == -1) {
-        pwgts[where[i]] += vwgt[k];
-        where[k] = where[i];
+        if (pwgts[l]+vwgt[k] > maxpwgt)
+          break;
+        pwgts[l] += vwgt[k];
+        where[k] = l;
         queue[last++] = k;
         nleft--;
       }
