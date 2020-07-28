@@ -842,7 +842,7 @@ void CreateCoarseGraph(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs,
 
   /* Check if the mask-version of the code is a good choice */
   mask = HTLENGTH;
-  if (1 || cnvtxs < 2*mask || graph->nedges/graph->nvtxs > mask/20) { 
+  if (cnvtxs < 2*mask || graph->nedges/graph->nvtxs > mask/20) { 
     CreateCoarseGraphNoMask(ctrl, graph, cnvtxs, match);
     return;
   }
