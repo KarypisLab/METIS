@@ -51,6 +51,7 @@ ctrl_t *SetupCtrl(moptype_et optype, idx_t *options, idx_t ncon, idx_t nparts,
       ctrl->objtype = GETOPTION(options, METIS_OPTION_OBJTYPE, METIS_OBJTYPE_CUT);
       ctrl->iptype  = GETOPTION(options, METIS_OPTION_IPTYPE,  METIS_IPTYPE_METISRB);
       ctrl->rtype   = METIS_RTYPE_GREEDY;
+      ctrl->nIparts = GETOPTION(options, METIS_OPTION_NIPARTS, -1);
       ctrl->ncuts   = GETOPTION(options, METIS_OPTION_NCUTS,   1);
       ctrl->niter   = GETOPTION(options, METIS_OPTION_NITER,   10);
       ctrl->ufactor = GETOPTION(options, METIS_OPTION_UFACTOR, KMETIS_DEFAULT_UFACTOR);
@@ -248,6 +249,7 @@ void PrintCtrl(ctrl_t *ctrl)
 
   printf("   Number of balancing constraints: %"PRIDX"\n", ctrl->ncon);
   printf("   Number of refinement iterations: %"PRIDX"\n", ctrl->niter);
+  printf("   Number of initial partitionings: %"PRIDX"\n", ctrl->nIparts);
   printf("   Random number seed: %"PRIDX"\n", ctrl->seed);
 
   if (ctrl->optype == METIS_OP_OMETIS) {

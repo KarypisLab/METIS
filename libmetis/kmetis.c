@@ -55,7 +55,7 @@ int METIS_PartGraphKway(idx_t *nvtxs, idx_t *ncon, idx_t *xadj, idx_t *adjncy,
 
   /* set various run parameters that depend on the graph */
   ctrl->CoarsenTo = gk_max((*nvtxs)/(40*gk_log2(*nparts)), 30*(*nparts));
-  ctrl->nIparts   = (ctrl->CoarsenTo == 30*(*nparts) ? 4 : 5);
+  ctrl->nIparts   = (ctrl->nIparts != -1 ? ctrl->nIparts : (ctrl->CoarsenTo == 30*(*nparts) ? 4 : 5));
 
   /* take care contiguity requests for disconnected graphs */
   if (ctrl->contig && !IsConnected(graph, 0)) 
@@ -69,13 +69,7 @@ int METIS_PartGraphKway(idx_t *nvtxs, idx_t *ncon, idx_t *xadj, idx_t *adjncy,
   IFSET(ctrl->dbglvl, METIS_DBG_TIME, gk_startcputimer(ctrl->TotalTmr));
 
   if (ctrl->dbglvl&512) {
-    idx_t mynparts=sqrt(graph->nvtxs);;
-
-    mynparts = GrowMultisection(ctrl, graph, *nparts, part);
-    BalanceAndRefineLP(ctrl, graph, mynparts, part);
-    //BalanceAndRefine(ctrl, graph, mynparts, part);
-
-    *nparts = mynparts;
+    *objval = BlockKWayPartitioning(ctrl, graph, part);
   }
   else {
     *objval = MlevelKWayPartitioning(ctrl, graph, part);
@@ -251,6 +245,86 @@ void InitKWayPartitioning(ctrl_t *ctrl, graph_t *graph)
 
   gk_free((void **)&ubvec, &bestwhere, LTERM);
 
+}
+
+
+
+/*************************************************************************/
+/*! This function computes a k-way partitioning of a graph that minimizes
+    the specified objective function.
+
+    \param ctrl is the control structure
+    \param graph is the graph to be partitioned
+    \param part is the vector that on return will store the partitioning
+
+    \returns the objective value of the partitoning. The partitioning 
+             itself is stored in the part vector.
+*/
+/*************************************************************************/
+idx_t BlockKWayPartitioning(ctrl_t *ctrl, graph_t *graph, idx_t *part)
+{
+  idx_t i, ii, j, nvtxs, objval=0;
+  idx_t *vwgt;
+  idx_t nparts, mynparts;
+  idx_t *fpwgts, *cpwgts, *fpart, *perm;
+  ipq_t *queue;
+
+  WCOREPUSH;
+
+  nvtxs = graph->nvtxs;
+  vwgt  = graph->vwgt;
+
+  nparts = ctrl->nparts;
+
+  mynparts = gk_min(100*nparts, sqrt(nvtxs));
+
+  for (i=0; i<nvtxs; i++)
+    part[i] = i%nparts;
+  irandArrayPermute(nvtxs, part, 4*nvtxs, 0);
+  printf("Random cut: %d\n", (int)ComputeCut(graph, part));
+
+
+  /* create the initial multi-section */
+  mynparts = GrowMultisection(ctrl, graph, mynparts, part);
+
+  /* balance using label-propagation and refine using a randomized greedy strategy */
+  BalanceAndRefineLP(ctrl, graph, mynparts, part);
+
+
+  /* determine the size of the fine partitions */
+  fpwgts = iset(mynparts, 0, iwspacemalloc(ctrl, mynparts));
+  for (i=0; i<nvtxs; i++)
+    fpwgts[part[i]] += vwgt[i];
+
+  /* create and initialize the queue that will determine
+     where to put the next one */
+  cpwgts = iset(nparts, 0, iwspacemalloc(ctrl, nparts));
+  queue = ipqCreate(nparts);
+  for (i=0; i<nparts; i++)
+    ipqInsert(queue, i, 0);
+
+  /* assign the fine partitions into the coarse partitions */
+  fpart = iwspacemalloc(ctrl, mynparts);
+  perm  = iwspacemalloc(ctrl, mynparts);
+  irandArrayPermute(mynparts, perm, mynparts, 1);
+  for (ii=0; ii<mynparts; ii++) {
+    i = perm[ii];
+    j = ipqSeeTopVal(queue);
+    fpart[i] = j;
+    cpwgts[j] += fpwgts[i];
+    ipqUpdate(queue, j, -cpwgts[j]);
+  }
+  ipqDestroy(queue);
+
+  for (i=0; i<nparts; i++) 
+    printf("cpwgts[%d] = %d\n", (int)i, (int)cpwgts[i]);
+
+  for (i=0; i<nvtxs; i++)
+    part[i] = fpart[part[i]];
+
+  WCOREPOP;
+
+  return ComputeCut(graph, part);
 }
 
 

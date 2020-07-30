@@ -83,6 +83,7 @@ int main(int argc, char *argv[])
   options[METIS_OPTION_MINCONN]   = params->minconn;
   options[METIS_OPTION_CONTIG]    = params->contig;
   options[METIS_OPTION_SEED]      = params->seed;
+  options[METIS_OPTION_NIPARTS]   = params->niparts;
   options[METIS_OPTION_NITER]     = params->niter;
   options[METIS_OPTION_NCUTS]     = params->ncuts;
   options[METIS_OPTION_UFACTOR]   = params->ufactor;
@@ -187,8 +188,8 @@ void GPPrintInfo(params_t *params, graph_t *graph)
       (params->nooutput ? "YES" : "NO")
       );
 
-  printf(" seed=%"PRIDX", niter=%"PRIDX", ncuts=%"PRIDX"\n", 
-      params->seed, params->niter, params->ncuts);
+  printf(" seed=%"PRIDX", niparts-%"PRIDX", niter=%"PRIDX", ncuts=%"PRIDX"\n", 
+      params->seed, params->niparts, params->niter, params->ncuts);
 
   if (params->ubvec) {
     printf(" ubvec=(");
