@@ -20,7 +20,7 @@
 
 #define LTERM			(void **) 0	/* List terminator for gk_free() */
 
-#define HTLENGTH		((1<<11)-1)
+#define HTLENGTH		((1<<13)-1)
 
 #define INIT_MAXNAD             200     /* Initial number of maximum number of 
                                            adjacent domains. This number will be
