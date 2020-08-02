@@ -133,6 +133,18 @@ int main(int argc, char *argv[])
     GPReportResults(params, graph, part, objval);
   }
 
+#ifdef XXX
+  {
+    idx_t *old2new = imalloc(graph->nvtxs, "old2new");
+
+    METIS_CacheFriendlyReordering(graph->nvtxs, graph->xadj, graph->adjncy, part, old2new);
+    WritePartition("ciperm", old2new, graph->nvtxs, params->nparts); 
+
+    gk_free((void **)&old2new, LTERM);
+  }
+#endif
+
+
   FreeGraph(&graph);
   gk_free((void **)&part, LTERM);
   gk_free((void **)&params->filename, &params->tpwgtsfile, &params->tpwgts, 

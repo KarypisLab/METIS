@@ -228,6 +228,11 @@ METIS_API(int) METIS_NodeRefine(idx_t nvtxs, idx_t *xadj, idx_t *vwgt, idx_t *ad
                    idx_t *where, idx_t *hmarker, real_t ubfactor);
 
 
+/* These functions are used by DGL */
+
+METIS_API(int) METIS_CacheFriendlyReordering(idx_t nvtxs, idx_t *xadj, idx_t *adjncy,
+                   idx_t *part, idx_t *old2new);
+
 #ifdef __cplusplus
 }
 #endif
