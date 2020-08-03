@@ -726,8 +726,7 @@ void FM_2WayNodeRefine2SidedP(ctrl_t *ctrl, graph_t *graph,
 /*************************************************************************/
 /*! This function computes a cache-friendly permutation of each partition.
     The resulting permutation is retuned in old2new, which is a vector of 
-    size nvtxs such for vertex i, old2new[i] is its new vertex number, 
-    localized to its partition.
+    size nvtxs such for vertex i, old2new[i] is its new vertex number. 
 */
 /**************************************************************************/
 int METIS_CacheFriendlyReordering(idx_t nvtxs, idx_t *xadj, idx_t *adjncy, 
@@ -796,25 +795,20 @@ int METIS_CacheFriendlyReordering(idx_t nvtxs, idx_t *xadj, idx_t *adjncy,
 
   /* figure out the partitions */
   nparts = imax(nvtxs, part, 1)+1;
-  pwgts = ismalloc(nparts+1, 0, "METIS_CacheFriendlyReordering: pwgts");
+  pwgts  = ismalloc(nparts+1, 0, "METIS_CacheFriendlyReordering: pwgts");
 
-#ifdef XXX
   for (i=0; i<nvtxs; i++) 
     pwgts[part[i]]++;
   MAKECSR(i, nparts, pwgts);
 
-  for (i=0; i<nparts; i++)
-    printf("%d %d\n", (int)i, (int)(pwgts[i+1]-pwgts[i]));
-#endif 
-
   for (i=0; i<nvtxs; i++) 
     old2new[levels[i].val] = pwgts[part[levels[i].val]]++;
 
-/*
+#ifdef XXX
   for (i=0; i<nvtxs; i++)
     for (j=xadj[i]; j<xadj[i+1]; j++)
-      printf("COO: %d %d\n", old2new[i], old2new[adjncy[j]]);
-*/
+      printf("COO: %d %d\n", (int)old2new[i], (int)old2new[adjncy[j]]);
+#endif 
 
   gk_free((void **)&cot, &pos, &levels, &pwgts, LTERM);
 
