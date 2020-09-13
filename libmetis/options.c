@@ -51,6 +51,7 @@ ctrl_t *SetupCtrl(moptype_et optype, idx_t *options, idx_t ncon, idx_t nparts,
       ctrl->objtype = GETOPTION(options, METIS_OPTION_OBJTYPE, METIS_OBJTYPE_CUT);
       ctrl->iptype  = GETOPTION(options, METIS_OPTION_IPTYPE,  METIS_IPTYPE_METISRB);
       ctrl->rtype   = METIS_RTYPE_GREEDY;
+      ctrl->nIparts = GETOPTION(options, METIS_OPTION_NIPARTS, -1);
       ctrl->ncuts   = GETOPTION(options, METIS_OPTION_NCUTS,   1);
       ctrl->niter   = GETOPTION(options, METIS_OPTION_NITER,   10);
       ctrl->ufactor = GETOPTION(options, METIS_OPTION_UFACTOR, KMETIS_DEFAULT_UFACTOR);
@@ -78,12 +79,13 @@ ctrl_t *SetupCtrl(moptype_et optype, idx_t *options, idx_t ncon, idx_t nparts,
   }
 
   /* common options */
-  ctrl->ctype   = GETOPTION(options, METIS_OPTION_CTYPE, METIS_CTYPE_SHEM);
-  ctrl->no2hop  = GETOPTION(options, METIS_OPTION_NO2HOP, 0);
-  ctrl->ondisk  = GETOPTION(options, METIS_OPTION_ONDISK, 0);
-  ctrl->seed    = GETOPTION(options, METIS_OPTION_SEED, -1);
-  ctrl->dbglvl  = GETOPTION(options, METIS_OPTION_DBGLVL, 0);
-  ctrl->numflag = GETOPTION(options, METIS_OPTION_NUMBERING, 0);
+  ctrl->ctype     = GETOPTION(options, METIS_OPTION_CTYPE, METIS_CTYPE_SHEM);
+  ctrl->no2hop    = GETOPTION(options, METIS_OPTION_NO2HOP, 0);
+  ctrl->ondisk    = GETOPTION(options, METIS_OPTION_ONDISK, 0);
+  ctrl->seed      = GETOPTION(options, METIS_OPTION_SEED, -1);
+  ctrl->dbglvl    = GETOPTION(options, METIS_OPTION_DBGLVL, 0);
+  ctrl->numflag   = GETOPTION(options, METIS_OPTION_NUMBERING, 0);
+  ctrl->dropedges = GETOPTION(options, METIS_OPTION_DROPEDGES, 0);
 
   /* set non-option information */
   ctrl->optype  = optype;
@@ -243,9 +245,11 @@ void PrintCtrl(ctrl_t *ctrl)
   printf("   Perform a 2-hop matching: %s\n", (ctrl->no2hop ? "No" : "Yes"));
 
   printf("   On disk storage: %s\n", (ctrl->ondisk ? "Yes" : "No"));
+  printf("   Drop edges: %s\n", (ctrl->dropedges ? "Yes" : "No"));
 
   printf("   Number of balancing constraints: %"PRIDX"\n", ctrl->ncon);
   printf("   Number of refinement iterations: %"PRIDX"\n", ctrl->niter);
+  printf("   Number of initial partitionings: %"PRIDX"\n", ctrl->nIparts);
   printf("   Random number seed: %"PRIDX"\n", ctrl->seed);
 
   if (ctrl->optype == METIS_OP_OMETIS) {

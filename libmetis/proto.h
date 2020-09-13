@@ -55,7 +55,7 @@ void CreateCoarseGraphNoMask(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs,
          idx_t *match);
 void CreateCoarseGraphPerm(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs, 
          idx_t *match, idx_t *perm);
-graph_t *SetupCoarseGraph(graph_t *graph, idx_t cnvtxs, idx_t dovsize);
+graph_t *SetupCoarseGraph(graph_t *graph, idx_t cnvtxs, int dovsize);
 void ReAdjustMemory(ctrl_t *ctrl, graph_t *graph, graph_t *cgraph);
 
 
@@ -145,6 +145,10 @@ void GrowBisectionNode2(ctrl_t *ctrl, graph_t *graph, real_t *ntpwgts, idx_t nip
 /* kmetis.c */
 idx_t MlevelKWayPartitioning(ctrl_t *ctrl, graph_t *graph, idx_t *part);
 void InitKWayPartitioning(ctrl_t *ctrl, graph_t *graph);
+idx_t BlockKWayPartitioning(ctrl_t *ctrl, graph_t *graph, idx_t *part);
+idx_t GrowMultisection(ctrl_t *ctrl, graph_t *graph, idx_t nparts, idx_t *where);
+void BalanceAndRefineLP(ctrl_t *ctrl, graph_t *graph, idx_t nparts, idx_t *where);
+void BalanceAndRefine(ctrl_t *ctrl, graph_t *graph, idx_t nparts, idx_t *where);
 
 
 /* kwayfm.c */

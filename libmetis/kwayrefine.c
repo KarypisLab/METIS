@@ -320,8 +320,11 @@ void ProjectKWayPartition(ctrl_t *ctrl, graph_t *graph)
   idx_t *xadj, *adjncy, *adjwgt;
   idx_t *cmap, *where, *bndptr, *bndind, *cwhere, *htable;
   graph_t *cgraph;
+  int dropedges;
 
   WCOREPUSH;
+
+  dropedges = ctrl->dropedges;
 
   nparts = ctrl->nparts;
 
@@ -354,7 +357,7 @@ void ProjectKWayPartition(ctrl_t *ctrl, graph_t *graph)
         for (i=0; i<nvtxs; i++) {
           k        = cmap[i];
           where[i] = cwhere[k];
-          cmap[i]  = cgraph->ckrinfo[k].ed;  /* For optimization */
+          cmap[i]  = (dropedges ? 1 : cgraph->ckrinfo[k].ed);  /* For optimization */
         }
 
         memset(graph->ckrinfo, 0, sizeof(ckrinfo_t)*nvtxs);
@@ -430,7 +433,7 @@ void ProjectKWayPartition(ctrl_t *ctrl, graph_t *graph)
         for (i=0; i<nvtxs; i++) {
           k        = cmap[i];
           where[i] = cwhere[k];
-          cmap[i]  = cgraph->vkrinfo[k].ned;  /* For optimization */
+          cmap[i]  = (dropedges ? 1 : cgraph->vkrinfo[k].ned);  /* For optimization */
         }
 
         memset(graph->vkrinfo, 0, sizeof(vkrinfo_t)*nvtxs);
@@ -493,7 +496,7 @@ void ProjectKWayPartition(ctrl_t *ctrl, graph_t *graph)
       gk_errexit(SIGERR, "Unknown objtype of %d\n", ctrl->objtype);
   }
 
-  graph->mincut = cgraph->mincut;
+  graph->mincut = (dropedges ? ComputeCut(graph, where) : cgraph->mincut);
   icopy(nparts*graph->ncon, cgraph->pwgts, graph->pwgts);
 
   FreeGraph(&graph->coarser);

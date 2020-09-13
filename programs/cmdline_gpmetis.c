@@ -29,11 +29,14 @@ static struct gk_option long_options[] = {
 
   {"ondisk",         0,      0,      METIS_OPTION_ONDISK},
 
+  {"dropedges",      0,      0,      METIS_OPTION_DROPEDGES},
+
   {"nooutput",       0,      0,      METIS_OPTION_NOOUTPUT},
 
   {"ufactor",        1,      0,      METIS_OPTION_UFACTOR},
   {"niter",          1,      0,      METIS_OPTION_NITER},
   {"ncuts",          1,      0,      METIS_OPTION_NCUTS},
+  {"niparts",        1,      0,      METIS_OPTION_NIPARTS},
 
   {"tpwgts",         1,      0,      METIS_OPTION_TPWGTS},
   {"ubvec",          1,      0,      METIS_OPTION_UBVEC},
@@ -175,6 +178,10 @@ static char helpstr[][100] =
 "     The load imbalance is defined in a way similar to ufactor.",
 "     If supplied, this parameter takes priority over ufactor.",
 " ",
+"  -niparts=int",
+"     Specifies the number of initial partitions to compute. The default",
+"     value is determined by the algorithm automatically.",
+" ",
 "  -niter=int",
 "     Specifies the number of iterations for the refinement algorithms",
 "     at each stage of the uncoarsening process. Default is 10.",
@@ -243,11 +250,14 @@ params_t *parse_cmdline(int argc, char *argv[])
 
   params->ondisk        = 0;
 
+  params->dropedges     = 0;
+
   params->nooutput      = 0;
   params->wgtflag       = 3;
 
   params->ncuts         = 1;
   params->niter         = 10;
+  params->niparts       = -1;
 
   params->dbglvl        = 0;
   params->balance       = 0;
@@ -318,6 +328,10 @@ params_t *parse_cmdline(int argc, char *argv[])
         params->ondisk = 1;
         break;
 
+      case METIS_OPTION_DROPEDGES:
+        params->dropedges = 1;
+        break;
+
       case METIS_OPTION_NOOUTPUT:
         params->nooutput = 1;
         break;
@@ -334,6 +348,9 @@ params_t *parse_cmdline(int argc, char *argv[])
         if (gk_optarg) params->ubvecstr = gk_strdup(gk_optarg);
         break;
 
+      case METIS_OPTION_NIPARTS:
+        if (gk_optarg) params->niparts = (idx_t)atoi(gk_optarg);
+        break;
       case METIS_OPTION_NCUTS:
         if (gk_optarg) params->ncuts = (idx_t)atoi(gk_optarg);
         break;

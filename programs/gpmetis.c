@@ -73,19 +73,21 @@ int main(int argc, char *argv[])
   part = imalloc(graph->nvtxs, "main: part");
 
   METIS_SetDefaultOptions(options);
-  options[METIS_OPTION_OBJTYPE] = params->objtype;
-  options[METIS_OPTION_CTYPE]   = params->ctype;
-  options[METIS_OPTION_IPTYPE]  = params->iptype;
-  options[METIS_OPTION_RTYPE]   = params->rtype;
-  options[METIS_OPTION_NO2HOP]  = params->no2hop;
-  options[METIS_OPTION_ONDISK]  = params->ondisk;
-  options[METIS_OPTION_MINCONN] = params->minconn;
-  options[METIS_OPTION_CONTIG]  = params->contig;
-  options[METIS_OPTION_SEED]    = params->seed;
-  options[METIS_OPTION_NITER]   = params->niter;
-  options[METIS_OPTION_NCUTS]   = params->ncuts;
-  options[METIS_OPTION_UFACTOR] = params->ufactor;
-  options[METIS_OPTION_DBGLVL]  = params->dbglvl;
+  options[METIS_OPTION_OBJTYPE]   = params->objtype;
+  options[METIS_OPTION_CTYPE]     = params->ctype;
+  options[METIS_OPTION_IPTYPE]    = params->iptype;
+  options[METIS_OPTION_RTYPE]     = params->rtype;
+  options[METIS_OPTION_NO2HOP]    = params->no2hop;
+  options[METIS_OPTION_ONDISK]    = params->ondisk;
+  options[METIS_OPTION_DROPEDGES] = params->dropedges;
+  options[METIS_OPTION_MINCONN]   = params->minconn;
+  options[METIS_OPTION_CONTIG]    = params->contig;
+  options[METIS_OPTION_SEED]      = params->seed;
+  options[METIS_OPTION_NIPARTS]   = params->niparts;
+  options[METIS_OPTION_NITER]     = params->niter;
+  options[METIS_OPTION_NCUTS]     = params->ncuts;
+  options[METIS_OPTION_UFACTOR]   = params->ufactor;
+  options[METIS_OPTION_DBGLVL]    = params->dbglvl;
 
   gk_malloc_init();
   gk_startcputimer(params->parttimer);
@@ -130,6 +132,18 @@ int main(int argc, char *argv[])
 
     GPReportResults(params, graph, part, objval);
   }
+
+#ifdef XXX
+  {
+    idx_t *old2new = imalloc(graph->nvtxs, "old2new");
+
+    METIS_CacheFriendlyReordering(graph->nvtxs, graph->xadj, graph->adjncy, part, old2new);
+    WritePartition("ciperm", old2new, graph->nvtxs, params->nparts); 
+
+    gk_free((void **)&old2new, LTERM);
+  }
+#endif
+
 
   FreeGraph(&graph);
   gk_free((void **)&part, LTERM);
@@ -186,8 +200,8 @@ void GPPrintInfo(params_t *params, graph_t *graph)
       (params->nooutput ? "YES" : "NO")
       );
 
-  printf(" seed=%"PRIDX", niter=%"PRIDX", ncuts=%"PRIDX"\n", 
-      params->seed, params->niter, params->ncuts);
+  printf(" seed=%"PRIDX", niparts-%"PRIDX", niter=%"PRIDX", ncuts=%"PRIDX"\n", 
+      params->seed, params->niparts, params->niter, params->ncuts);
 
   if (params->ubvec) {
     printf(" ubvec=(");

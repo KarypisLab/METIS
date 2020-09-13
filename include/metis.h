@@ -228,6 +228,11 @@ METIS_API(int) METIS_NodeRefine(idx_t nvtxs, idx_t *xadj, idx_t *vwgt, idx_t *ad
                    idx_t *where, idx_t *hmarker, real_t ubfactor);
 
 
+/* These functions are used by DGL */
+
+METIS_API(int) METIS_CacheFriendlyReordering(idx_t nvtxs, idx_t *xadj, idx_t *adjncy,
+                   idx_t *part, idx_t *old2new);
+
 #ifdef __cplusplus
 }
 #endif
@@ -262,6 +267,7 @@ typedef enum {
   METIS_OPTION_IPTYPE,
   METIS_OPTION_RTYPE,
   METIS_OPTION_DBGLVL,
+  METIS_OPTION_NIPARTS,
   METIS_OPTION_NITER,
   METIS_OPTION_NCUTS,
   METIS_OPTION_SEED,
@@ -275,6 +281,7 @@ typedef enum {
   METIS_OPTION_NSEPS,
   METIS_OPTION_UFACTOR,
   METIS_OPTION_NUMBERING,
+  METIS_OPTION_DROPEDGES,
 
   /* Used for command-line parameter purposes */
   METIS_OPTION_HELP,

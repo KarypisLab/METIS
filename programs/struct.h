@@ -29,11 +29,14 @@ typedef struct {
 
   idx_t ondisk;
 
+  idx_t dropedges;
+
   idx_t nooutput;
 
   idx_t balance;
   idx_t ncuts;
   idx_t niter;
+  idx_t niparts;
 
   idx_t gtype;
   idx_t ncommon;
