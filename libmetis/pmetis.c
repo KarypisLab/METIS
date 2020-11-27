@@ -97,6 +97,7 @@ int METIS_PartGraphRecursive(idx_t *nvtxs, idx_t *ncon, idx_t *xadj,
   graph_t *graph;
   ctrl_t *ctrl;
 
+#ifdef XXX
   /* set up malloc cleaning code and signal catchers */
   if (!gk_malloc_init()) 
     return METIS_ERROR_MEMORY;
@@ -105,6 +106,7 @@ int METIS_PartGraphRecursive(idx_t *nvtxs, idx_t *ncon, idx_t *xadj,
 
   if ((sigrval = gk_sigcatch()) != 0) 
     goto SIGTHROW;
+#endif
 
 
   /* set up the run parameters */
@@ -143,8 +145,10 @@ SIGTHROW:
   if (renumber)
     Change2FNumbering(*nvtxs, xadj, adjncy, part);
 
+#ifdef XXX
   gk_siguntrap();
   gk_malloc_cleanup(0);
+#endif
 
   return metis_rcode(sigrval);
 }
