@@ -51,10 +51,6 @@ idx_t Match_JC(ctrl_t *ctrl, graph_t *graph);
 void PrintCGraphStats(ctrl_t *ctrl, graph_t *graph);
 void CreateCoarseGraph(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs, 
          idx_t *match);
-void CreateCoarseGraphNoMask(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs, 
-         idx_t *match);
-void CreateCoarseGraphPerm(ctrl_t *ctrl, graph_t *graph, idx_t cnvtxs, 
-         idx_t *match, idx_t *perm);
 graph_t *SetupCoarseGraph(graph_t *graph, idx_t cnvtxs, int dovsize);
 void ReAdjustMemory(ctrl_t *ctrl, graph_t *graph, graph_t *cgraph);
 
