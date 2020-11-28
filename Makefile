@@ -1,4 +1,5 @@
 # Configuration options.
+prefix     = ~/local
 i64        = not-set
 r64        = not-set
 gdb        = not-set
@@ -7,10 +8,9 @@ assert2    = not-set
 debug      = not-set
 gprof      = not-set
 openmp     = not-set
-prefix     = ~/local
-gklib_path = not-set
 shared     = not-set
 cc         = not-set
+gklib_path = not-set
 
 
 # Basically proxies everything to the builddir cmake.
@@ -22,10 +22,12 @@ REALWIDTH = "\#define REALTYPEWIDTH 32"
 
 # Process configuration options.
 CONFIG_FLAGS = -DCMAKE_VERBOSE_MAKEFILE=1
-ifeq ($(gklib_path), not-set)
-    gklib_path = GKlib
+ifneq ($(gklib_path), not-set)
+    CONFIG_FLAGS += -DGKLIB_PATH=$(abspath $(gklib_path))
 endif
-CONFIG_FLAGS += -DGKLIB_PATH=$(abspath $(gklib_path))
+ifneq ($(prefix), not-set)
+    CONFIG_FLAGS += -DCMAKE_INSTALL_PREFIX=$(prefix)
+endif
 ifneq ($(i64), not-set)
     CONFIG_FLAGS += -DIDX64=$(i64)
     IDXWIDTH  = "\#define IDXTYPEWIDTH 64"
@@ -51,9 +53,6 @@ ifneq ($(gprof), not-set)
 endif
 ifneq ($(openmp), not-set)
     CONFIG_FLAGS += -DOPENMP=$(openmp)
-endif
-ifneq ($(prefix), not-set)
-    CONFIG_FLAGS += -DCMAKE_INSTALL_PREFIX=$(prefix)
 endif
 ifneq ($(shared), not-set)
     CONFIG_FLAGS += -DSHARED=1

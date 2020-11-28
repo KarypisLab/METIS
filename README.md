@@ -7,9 +7,9 @@ partitioning schemes developed in our lab.
 
 ##  Downloading METIS
 
-METIS uses Git submodules to manage external dependencies. Hence, please specify the `--recursive` option while cloning the repo as follow:
+You can download METIS by simply cloning it using the command:
 ```
-git clone --recursive https://github.com/KarypisLab/METIS.git
+git clone https://github.com/KarypisLab/METIS.git
 ```
 
 ## Building standalone METIS binaries and library
@@ -18,13 +18,17 @@ To build METIS you can follow the instructions below:
 
 ### Dependencies
 
-General dependencies for building slim are: gcc, cmake, build-essential.
+General dependencies for building slim are: gcc, cmake, build-essential. 
 In Ubuntu systems these can be obtained from the apt package manager (e.g., apt-get install cmake, etc) 
 
 ```
 sudo apt-get install build-essential
 sudo apt-get install cmake
 ```
+
+In addition, you need to download and install
+[GKlib](https://github.com/KarypisLab/GKlib) by following the instructions there. 
+
 
 ### Building and installing METIS  
 
@@ -35,7 +39,7 @@ make config shared=1 cc=gcc prefix=~/local
 make install
 ```
 
-will configure metis to be built as a shared library using GCC and then install the binaries, header files, and libraries at 
+will configure METIS to be built as a shared library using GCC and then install the binaries, header files, and libraries at 
 
 ```
 ~/local/bin
@@ -47,13 +51,15 @@ directories, respectively.
 
 ### Common configuration options are:
 
-    cc=[compiler]   - The C compiler to use [default is determined by CMake]
-    shared=1        - Build a shared library instead of a static one [off by default]
-    prefix=[PATH]   - Set the installation prefix [~/local by default]
-    i64=1           - Sets to 64 bits the width of the datatype that will store information
-                      about the vertices and their adjacency lists. 
-    r64=1           - Sets to 64 bits the width of the datatype that will store information 
-                      about floating point numbers.
+    cc=[compiler]     - The C compiler to use [default is determined by CMake]
+    shared=1          - Build a shared library instead of a static one [off by default]
+    prefix=[PATH]     - Set the installation prefix [~/local by default]
+    gklib_path=[PATH] - Set the prefix path where GKlib has been installed. You can skip
+                        this if GKlib's installation prefix is the same as that of METIS.
+    i64=1             - Sets to 64 bits the width of the datatype that will store information
+                        about the vertices and their adjacency lists. 
+    r64=1             - Sets to 64 bits the width of the datatype that will store information 
+                        about floating point numbers.
 
 ### Advanced debugging related options:
 

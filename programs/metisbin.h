@@ -43,6 +43,8 @@
 extern char* strdup (const char *);
 #endif
 
+#define SVNINFO "unknown"
+
 #if defined(COMPILER_MSC)
 #if defined(rint)
   #undef rint
