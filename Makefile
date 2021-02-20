@@ -1,5 +1,4 @@
 # Configuration options.
-prefix     = ~/local
 i64        = not-set
 r64        = not-set
 gdb        = not-set
@@ -10,7 +9,8 @@ gprof      = not-set
 openmp     = not-set
 shared     = not-set
 cc         = not-set
-gklib_path = not-set
+prefix     = ~/local
+gklib_path = ~/local
 
 
 # Basically proxies everything to the builddir cmake.
