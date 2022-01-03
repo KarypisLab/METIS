@@ -18,7 +18,7 @@ To build METIS you can follow the instructions below:
 
 ### Dependencies
 
-General dependencies for building slim are: gcc, cmake, build-essential. 
+General dependencies for building METIS are: gcc, cmake, build-essential. 
 In Ubuntu systems these can be obtained from the apt package manager (e.g., apt-get install cmake, etc) 
 
 ```
