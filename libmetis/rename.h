@@ -93,6 +93,7 @@
 #define SetupSplitGraph                 libmetis__SetupSplitGraph
 #define CreateGraph                     libmetis__CreateGraph
 #define InitGraph                       libmetis__InitGraph
+#define FreeSData                       libmetis__FreeSData
 #define FreeRData                       libmetis__FreeRData
 #define FreeGraph                       libmetis__FreeGraph
 #define graph_WriteToDisk               libmetis__graph_WriteToDisk

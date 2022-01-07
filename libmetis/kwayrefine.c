@@ -331,6 +331,9 @@ void ProjectKWayPartition(ctrl_t *ctrl, graph_t *graph)
   cgraph = graph->coarser;
   cwhere = cgraph->where;
 
+  /* free the coarse graph's structure (reduce maxmem) */
+  FreeSData(cgraph);
+
   nvtxs   = graph->nvtxs;
   cmap    = graph->cmap;
   xadj    = graph->xadj;

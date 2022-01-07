@@ -121,6 +121,7 @@ void SetupGraph_label(graph_t *graph);
 graph_t *SetupSplitGraph(graph_t *graph, idx_t snvtxs, idx_t snedges);
 graph_t *CreateGraph(void);
 void InitGraph(graph_t *graph);
+void FreeSData(graph_t *graph);
 void FreeRData(graph_t *graph);
 void FreeGraph(graph_t **graph);
 void graph_WriteToDisk(ctrl_t *ctrl, graph_t *graph);

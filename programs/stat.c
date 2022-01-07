@@ -142,7 +142,7 @@ void ComputePartitionInfo(params_t *params, graph_t *graph, idx_t *where)
   }
 
   gk_free((void **)&cptr, &cind, &cpwgts, LTERM);
-             
+
 }
 
 

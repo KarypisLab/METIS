@@ -225,6 +225,25 @@ void InitGraph(graph_t *graph)
 
 
 /*************************************************************************/
+/*! This function frees the memory storing the structure of the graph */
+/*************************************************************************/
+void FreeSData(graph_t *graph) 
+{
+  /* free graph structure */
+  if (graph->free_xadj)
+    gk_free((void **)&graph->xadj, LTERM);
+  if (graph->free_vwgt)
+    gk_free((void **)&graph->vwgt, LTERM);
+  if (graph->free_vsize)
+    gk_free((void **)&graph->vsize, LTERM);
+  if (graph->free_adjncy)
+    gk_free((void **)&graph->adjncy, LTERM);
+  if (graph->free_adjwgt)
+    gk_free((void **)&graph->adjwgt, LTERM);
+}
+
+
+/*************************************************************************/
 /*! This function frees the refinement/partition memory stored in a graph */
 /*************************************************************************/
 void FreeRData(graph_t *graph) 
@@ -252,19 +271,10 @@ void FreeGraph(graph_t **r_graph)
 
   graph = *r_graph;
 
-  /* free graph structure */
-  if (graph->free_xadj)
-    gk_free((void **)&graph->xadj, LTERM);
-  if (graph->free_vwgt)
-    gk_free((void **)&graph->vwgt, LTERM);
-  if (graph->free_vsize)
-    gk_free((void **)&graph->vsize, LTERM);
-  if (graph->free_adjncy)
-    gk_free((void **)&graph->adjncy, LTERM);
-  if (graph->free_adjwgt)
-    gk_free((void **)&graph->adjwgt, LTERM);
-    
-  /* free partition/refinement structure */
+  /* free the graph structure's fields */
+  FreeSData(graph);
+
+  /* free the partition/refinement fields */
   FreeRData(graph);
 
   gk_free((void **)&graph->tvwgt, &graph->invtvwgt, &graph->label, 
