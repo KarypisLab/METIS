@@ -126,7 +126,7 @@ idx_t MlevelKWayPartitioning(ctrl_t *ctrl, graph_t *graph, idx_t *part)
 
     /* Re-allocate the work space */
     AllocateWorkSpace(ctrl, graph);
-    AllocateRefinementWorkSpace(ctrl, 2*cgraph->nedges);
+    AllocateRefinementWorkSpace(ctrl, graph->nedges, 2*cgraph->nedges);
 
     IFSET(ctrl->dbglvl, METIS_DBG_TIME, gk_stopcputimer(ctrl->InitPartTmr));
     IFSET(ctrl->dbglvl, METIS_DBG_IPART, 
@@ -248,7 +248,6 @@ void InitKWayPartitioning(ctrl_t *ctrl, graph_t *graph)
 }
 
 
-
 /*************************************************************************/
 /*! This function computes a k-way partitioning of a graph that minimizes
     the specified objective function.
@@ -283,13 +282,11 @@ idx_t BlockKWayPartitioning(ctrl_t *ctrl, graph_t *graph, idx_t *part)
   irandArrayPermute(nvtxs, part, 4*nvtxs, 0);
   printf("Random cut: %d\n", (int)ComputeCut(graph, part));
 
-
   /* create the initial multi-section */
   mynparts = GrowMultisection(ctrl, graph, mynparts, part);
 
   /* balance using label-propagation and refine using a randomized greedy strategy */
   BalanceAndRefineLP(ctrl, graph, mynparts, part);
-
 
   /* determine the size of the fine partitions */
   fpwgts = iset(mynparts, 0, iwspacemalloc(ctrl, mynparts));
@@ -564,56 +561,3 @@ void BalanceAndRefineLP(ctrl_t *ctrl, graph_t *graph, idx_t nparts, idx_t *where
 
   WCOREPOP;
 }
-
-
-/*************************************************************************/
-/*! This uses Metis' routines for balancing and refining the multi-BFS
-    solution. 
-*/
-/*************************************************************************/
-void BalanceAndRefine(ctrl_t *origctrl, graph_t *graph, idx_t nparts, idx_t *where)
-{
-  idx_t i;
-  idx_t options[METIS_NOPTIONS];
-  ctrl_t *ctrl;
-
-  FreeWorkSpace(origctrl);
-
-  METIS_SetDefaultOptions(options);
-  options[METIS_OPTION_NITER]     = origctrl->niter;
-  options[METIS_OPTION_DBGLVL]    = origctrl->dbglvl;
-  options[METIS_OPTION_UFACTOR]   = origctrl->ufactor;
-  options[METIS_OPTION_OBJTYPE]   = METIS_OBJTYPE_CUT;
-
-  ctrl = SetupCtrl(METIS_OP_KMETIS, options, 1, nparts, NULL, NULL);
-
-  AllocateWorkSpace(ctrl, graph);
-  AllocateRefinementWorkSpace(ctrl, 2*graph->nedges);
-
-  AllocateKWayPartitionMemory(ctrl, graph);
-  icopy(graph->nvtxs, where, graph->where);
-
-  ComputeKWayPartitionParams(ctrl, graph);
-
-  IFSET(ctrl->dbglvl, METIS_DBG_TIME, gk_startcputimer(origctrl->RefTmr));
-
-  SetupKWayBalMultipliers(ctrl, graph);
-
-  if (!IsBalanced(ctrl, graph, .02)) {
-    ComputeKWayBoundary(ctrl, graph, BNDTYPE_BALANCE);
-    Greedy_KWayOptimize(ctrl, graph, 1, 0, OMODE_BALANCE); 
-    ComputeKWayBoundary(ctrl, graph, BNDTYPE_REFINE);
-  }
-
-  Greedy_KWayOptimize(ctrl, graph, ctrl->niter, 5.0, OMODE_REFINE); 
-  icopy(graph->nvtxs, graph->where, where);
-
-  IFSET(ctrl->dbglvl, METIS_DBG_TIME, gk_stopcputimer(origctrl->RefTmr));
-
-  FreeRData(graph);
-  FreeCtrl(&ctrl);
-
-  AllocateWorkSpace(origctrl, graph);
-}
-
-

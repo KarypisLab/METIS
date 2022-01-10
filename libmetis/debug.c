@@ -234,6 +234,9 @@ idx_t CheckRInfo(ctrl_t *ctrl, ckrinfo_t *rinfo)
   idx_t i, j;
   cnbr_t *nbrs;
 
+  ASSERT(ctrl->nbrpoolcpos >= 0);
+  ASSERT(rinfo->nnbrs < ctrl->nparts);
+
   nbrs = ctrl->cnbrpool + rinfo->inbr;
 
   for (i=0; i<rinfo->nnbrs; i++) {

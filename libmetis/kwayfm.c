@@ -1902,7 +1902,7 @@ void KWayVolUpdate(ctrl_t *ctrl, graph_t *graph, idx_t v, idx_t from,
 
     myrinfo = graph->vkrinfo+ii;
     if (myrinfo->inbr == -1) 
-      myrinfo->inbr = vnbrpoolGetNext(ctrl, xadj[ii+1]-xadj[ii]+1);
+      myrinfo->inbr = vnbrpoolGetNext(ctrl, xadj[ii+1]-xadj[ii]);
     mynbrs = ctrl->vnbrpool + myrinfo->inbr;
 
     if (me == from) {

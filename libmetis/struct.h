@@ -192,6 +192,7 @@ typedef struct ctrl_t {
                              mallocs/frees */
 
   /* These are for use by the k-way refinement routines */
+  size_t nbrpoolsize_max;  /*!< The maximum number of {c,v}nbr_t entries that will ever be allocated */
   size_t nbrpoolsize;      /*!< The number of {c,v}nbr_t entries that have been allocated */
   size_t nbrpoolcpos;      /*!< The position of the first free entry in the array */
   size_t nbrpoolreallocs;  /*!< The number of times the pool was resized */

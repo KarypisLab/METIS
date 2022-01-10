@@ -145,7 +145,6 @@ void InitKWayPartitioning(ctrl_t *ctrl, graph_t *graph);
 idx_t BlockKWayPartitioning(ctrl_t *ctrl, graph_t *graph, idx_t *part);
 idx_t GrowMultisection(ctrl_t *ctrl, graph_t *graph, idx_t nparts, idx_t *where);
 void BalanceAndRefineLP(ctrl_t *ctrl, graph_t *graph, idx_t nparts, idx_t *where);
-void BalanceAndRefine(ctrl_t *ctrl, graph_t *graph, idx_t nparts, idx_t *where);
 
 
 /* kwayfm.c */
@@ -337,7 +336,7 @@ int metis_rcode(int sigrval);
 
 /* wspace.c */
 void AllocateWorkSpace(ctrl_t *ctrl, graph_t *graph);
-void AllocateRefinementWorkSpace(ctrl_t *ctrl, idx_t nbrpoolsize);
+void AllocateRefinementWorkSpace(ctrl_t *ctrl, idx_t nbrpoolsize_max, idx_t nbrpoolsize);
 void FreeWorkSpace(ctrl_t *ctrl);
 void *wspacemalloc(ctrl_t *ctrl, size_t nbytes);
 void wspacepush(ctrl_t *ctrl);

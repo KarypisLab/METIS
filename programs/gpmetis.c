@@ -200,7 +200,7 @@ void GPPrintInfo(params_t *params, graph_t *graph)
       (params->nooutput ? "YES" : "NO")
       );
 
-  printf(" seed=%"PRIDX", niparts-%"PRIDX", niter=%"PRIDX", ncuts=%"PRIDX"\n", 
+  printf(" seed=%"PRIDX", niparts=%"PRIDX", niter=%"PRIDX", ncuts=%"PRIDX"\n", 
       params->seed, params->niparts, params->niter, params->ncuts);
 
   if (params->ubvec) {
