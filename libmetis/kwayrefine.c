@@ -426,7 +426,6 @@ void ProjectKWayPartition(ctrl_t *ctrl, graph_t *graph)
         }
       
         graph->nbnd = nbnd;
-
       }
       ASSERT(CheckBnd2(graph));
       break;
@@ -507,7 +506,6 @@ void ProjectKWayPartition(ctrl_t *ctrl, graph_t *graph)
   icopy(nparts*graph->ncon, cgraph->pwgts, graph->pwgts);
 
   FreeGraph(&graph->coarser);
-  graph->coarser = NULL;
 
   WCOREPOP;
 }
@@ -532,7 +530,7 @@ void ComputeKWayBoundary(ctrl_t *ctrl, graph_t *graph, idx_t bndtype)
       /* Compute the boundary */
       if (bndtype == BNDTYPE_REFINE) {
         for (i=0; i<nvtxs; i++) {
-          if (graph->ckrinfo[i].ed-graph->ckrinfo[i].id >= 0) 
+          if (graph->ckrinfo[i].ed > 0 && graph->ckrinfo[i].ed-graph->ckrinfo[i].id >= 0)
             BNDInsert(nbnd, bndind, bndptr, i);
         }
       }

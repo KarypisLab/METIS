@@ -488,6 +488,8 @@ void Greedy_KWayCutOptimize(ctrl_t *ctrl, graph_t *graph, idx_t niter,
   *======================================================================*/
   for (pass=0; pass<niter; pass++) {
     ASSERT(ComputeCut(graph, where) == graph->mincut);
+    if (omode == OMODE_REFINE)
+      ASSERT(CheckBnd2(graph));
 
     if (omode == OMODE_BALANCE) {
       /* Check to see if things are out of balance, given the tolerance */
@@ -1152,6 +1154,8 @@ void Greedy_McKWayCutOptimize(ctrl_t *ctrl, graph_t *graph, idx_t niter,
   *======================================================================*/
   for (pass=0; pass<niter; pass++) {
     ASSERT(ComputeCut(graph, where) == graph->mincut);
+    if (omode == OMODE_REFINE)
+      ASSERT(CheckBnd2(graph));
 
     /* In balancing mode, exit as soon as balance is reached */
     if (omode == OMODE_BALANCE && IsBalanced(ctrl, graph, 0)) 
