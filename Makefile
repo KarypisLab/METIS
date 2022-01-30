@@ -6,6 +6,7 @@ assert     = not-set
 assert2    = not-set
 debug      = not-set
 gprof      = not-set
+valgrind   = not-set
 openmp     = not-set
 shared     = not-set
 cc         = not-set
@@ -29,11 +30,9 @@ ifneq ($(prefix), not-set)
     CONFIG_FLAGS += -DCMAKE_INSTALL_PREFIX=$(prefix)
 endif
 ifneq ($(i64), not-set)
-    CONFIG_FLAGS += -DIDX64=$(i64)
     IDXWIDTH  = "\#define IDXTYPEWIDTH 64"
 endif
 ifneq ($(r64), not-set)
-    CONFIG_FLAGS += -DREAL64=$(r64)
     REALWIDTH = "\#define REALTYPEWIDTH 64"
 endif
 ifneq ($(gdb), not-set)
@@ -50,6 +49,9 @@ ifneq ($(debug), not-set)
 endif
 ifneq ($(gprof), not-set)
     CONFIG_FLAGS += -DGPROF=$(gprof)
+endif
+ifneq ($(valgrind), not-set)
+    CONFIG_FLAGS += -DVALGRIND=$(valgrind)
 endif
 ifneq ($(openmp), not-set)
     CONFIG_FLAGS += -DOPENMP=$(openmp)
