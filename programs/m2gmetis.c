@@ -3,7 +3,7 @@
  *
  * m2gmetis.c
  *
- * Drivers for the mesh-to-graph coversion routines
+ * Drivers for the mesh-to-graph conversion routines
  *
  * Started 5/28/11
  * George

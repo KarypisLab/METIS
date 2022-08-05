@@ -94,7 +94,7 @@ void InitSeparator(ctrl_t *ctrl, graph_t *graph, idx_t niparts)
       break;
 
     default:
-      gk_errexit(SIGERR, "Unkown iptype of %"PRIDX"\n", ctrl->iptype);
+      gk_errexit(SIGERR, "Unknown iptype of %"PRIDX"\n", ctrl->iptype);
   }
 
   IFSET(ctrl->dbglvl, METIS_DBG_IPART, printf("Initial Sep: %"PRIDX"\n", graph->mincut));
@@ -346,7 +346,7 @@ void McRandomBisection(ctrl_t *ctrl, graph_t *graph, real_t *ntpwgts,
     irandArrayPermute(nvtxs, perm, nvtxs/2, 1);
     iset(ncon, 0, counts);
 
-    /* partition by spliting the queues randomly */
+    /* partition by splitting the queues randomly */
     for (ii=0; ii<nvtxs; ii++) {
       i        = perm[ii];
       qnum     = iargmax(ncon, vwgt+i*ncon,1);

@@ -121,7 +121,7 @@ void MinCover(idx_t *xadj, idx_t *adjncy, idx_t asize, idx_t bsize, idx_t *cover
 
 
 /*************************************************************************
-* This function perfoms a restricted DFS and augments matchings
+* This function performs a restricted DFS and augments matchings
 **************************************************************************/
 idx_t MinCover_Augment(idx_t *xadj, idx_t *adjncy, idx_t col, idx_t *mate, idx_t *flag, idx_t *level, idx_t maxlevel)
 {
@@ -206,7 +206,7 @@ void MinCover_Decompose(idx_t *xadj, idx_t *adjncy, idx_t asize, idx_t bsize, id
 
 
 /*************************************************************************
-* This function perfoms a dfs starting from an unmatched col node
+* This function performs a dfs starting from an unmatched col node
 * forming alternate paths
 **************************************************************************/
 void MinCover_ColDFS(idx_t *xadj, idx_t *adjncy, idx_t root, idx_t *mate, idx_t *where, idx_t flag)
@@ -231,7 +231,7 @@ void MinCover_ColDFS(idx_t *xadj, idx_t *adjncy, idx_t root, idx_t *mate, idx_t 
 }
 
 /*************************************************************************
-* This function perfoms a dfs starting from an unmatched col node
+* This function performs a dfs starting from an unmatched col node
 * forming alternate paths
 **************************************************************************/
 void MinCover_RowDFS(idx_t *xadj, idx_t *adjncy, idx_t root, idx_t *mate, idx_t *where, idx_t flag)

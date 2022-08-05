@@ -300,7 +300,7 @@ void Greedy_KWayCutOptimize0(ctrl_t *ctrl, graph_t *graph, idx_t niter,
         /* take care of i's move itself */
         UpdateEdgeSubDomainGraph(ctrl, from, to, myrinfo->id-mynbrs[k].ed, &maxndoms);
 
-        /* take care of the adjancent vertices */
+        /* take care of the adjacent vertices */
         for (j=xadj[i]; j<xadj[i+1]; j++) {
           me = where[adjncy[j]];
           if (me != from && me != to) {
@@ -642,7 +642,7 @@ void Greedy_KWayCutOptimize(ctrl_t *ctrl, graph_t *graph, idx_t niter,
         /* take care of i's move itself */
         UpdateEdgeSubDomainGraph(ctrl, from, to, myrinfo->id-mynbrs[k].ed, &maxndoms);
 
-        /* take care of the adjancent vertices */
+        /* take care of the adjacent vertices */
         for (j=xadj[i]; j<xadj[i+1]; j++) {
           me = where[adjncy[j]];
           if (me != from && me != to) {
@@ -968,7 +968,7 @@ void Greedy_KWayVolOptimize(ctrl_t *ctrl, graph_t *graph, idx_t niter,
         /* take care of i's move itself */
         UpdateEdgeSubDomainGraph(ctrl, from, to, myrinfo->nid-mynbrs[k].ned, &maxndoms);
 
-        /* take care of the adjancent vertices */
+        /* take care of the adjacent vertices */
         for (j=xadj[i]; j<xadj[i+1]; j++) {
           me = where[adjncy[j]];
           if (me != from && me != to) {
@@ -1300,7 +1300,7 @@ void Greedy_McKWayCutOptimize(ctrl_t *ctrl, graph_t *graph, idx_t niter,
         /* take care of i's move itself */
         UpdateEdgeSubDomainGraph(ctrl, from, to, myrinfo->id-mynbrs[k].ed, &maxndoms);
 
-        /* take care of the adjancent vertices */
+        /* take care of the adjacent vertices */
         for (j=xadj[i]; j<xadj[i+1]; j++) {
           me = where[adjncy[j]];
           if (me != from && me != to) {
@@ -1654,7 +1654,7 @@ void Greedy_McKWayVolOptimize(ctrl_t *ctrl, graph_t *graph, idx_t niter,
         /* take care of i's move itself */
         UpdateEdgeSubDomainGraph(ctrl, from, to, myrinfo->nid-mynbrs[k].ned, &maxndoms);
 
-        /* take care of the adjancent vertices */
+        /* take care of the adjacent vertices */
         for (j=xadj[i]; j<xadj[i+1]; j++) {
           me = where[adjncy[j]];
           if (me != from && me != to) {
@@ -1804,7 +1804,7 @@ idx_t IsArticulationNode(idx_t i, idx_t *xadj, idx_t *adjncy, idx_t *where,
         the queue. If queue is NULL, this parameter is ignored.
  \param vmarker is of size nvtxs and is used internally as a temporary array. 
         On entry and return all of its entries are 0.
- \param pmarker is of sie nparts and is used internally as a temporary marking
+ \param pmarker is of size nparts and is used internally as a temporary marking
         array. On entry and return all of its entries are -1.
  \param modind is an array of size nvtxs and is used to keep track of the 
         list of vertices whose gains need to be updated.

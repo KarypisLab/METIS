@@ -45,7 +45,7 @@
 #define LARGENIPARTS		7	/* Number of random initial partitions */
 #define SMALLNIPARTS		5	/* Number of random initial partitions */
 
-#define COARSEN_FRACTION	0.85	/* Node reduction between succesive coarsening levels */
+#define COARSEN_FRACTION	0.85	/* Node reduction between successive coarsening levels */
 
 #define COMPRESSION_FRACTION		0.85
 

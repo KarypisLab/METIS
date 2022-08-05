@@ -13,7 +13,7 @@
 
 
 /*************************************************************************/
-/*! This function free memory that was allocated by METIS and retuned
+/*! This function frees memory that was allocated by METIS and returns
     to the application.
     
     \param ptr points to the memory that was previously allocated by

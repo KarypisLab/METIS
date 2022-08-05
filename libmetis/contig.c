@@ -178,7 +178,7 @@ idx_t IsConnected(graph_t *graph, idx_t report)
 
 
 /*************************************************************************/
-/*! This function checks whether or not partition pid is contigous
+/*! This function checks whether or not partition pid is contiguous
   */
 /*************************************************************************/
 idx_t IsConnectedSubdomain(ctrl_t *ctrl, graph_t *graph, idx_t pid, idx_t report)

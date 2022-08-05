@@ -129,7 +129,7 @@ void SetupGraph_label(graph_t *graph)
 
 
 /*************************************************************************/
-/*! Setup the various arrays for the splitted graph */
+/*! Setup the various arrays for the split graph */
 /*************************************************************************/
 graph_t *SetupSplitGraph(graph_t *graph, idx_t snvtxs, idx_t snedges)
 {
@@ -141,7 +141,7 @@ graph_t *SetupSplitGraph(graph_t *graph, idx_t snvtxs, idx_t snedges)
   sgraph->nedges = snedges;
   sgraph->ncon   = graph->ncon;
 
-  /* Allocate memory for the splitted graph */
+  /* Allocate memory for the split graph */
   sgraph->xadj        = imalloc(snvtxs+1, "SetupSplitGraph: xadj");
   sgraph->vwgt        = imalloc(sgraph->ncon*snvtxs, "SetupSplitGraph: vwgt");
   sgraph->adjncy      = imalloc(snedges,  "SetupSplitGraph: adjncy");

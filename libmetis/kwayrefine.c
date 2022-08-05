@@ -147,7 +147,7 @@ void AllocateKWayPartitionMemory(ctrl_t *ctrl, graph_t *graph)
 
 /*************************************************************************/
 /*! This function computes the initial id/ed  for cut-based partitioning */
-/**************************************************************************/
+/*************************************************************************/
 void ComputeKWayPartitionParams(ctrl_t *ctrl, graph_t *graph)
 {
   idx_t i, j, k, l, nvtxs, ncon, nparts, nbnd, mincut, me, other;
@@ -671,7 +671,7 @@ void ComputeKWayVolGains(ctrl_t *ctrl, graph_t *graph)
 
 /*************************************************************************/
 /*! This function checks if the partition weights are within the balance
-contraints */
+constraints */
 /*************************************************************************/
 int IsBalanced(ctrl_t *ctrl, graph_t *graph, real_t ffactor)
 {
