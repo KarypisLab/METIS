@@ -12,6 +12,9 @@ add_executable(cmpfillin cmpfillin.c io.c smbfactor.c)
 # Link with the required libraries
 foreach(prog gpmetis ndmetis mpmetis m2gmetis graphchk cmpfillin)
   target_link_libraries(${prog} metis GKlib m)
+  if(APPLE)
+    target_compile_definitions(${prog} PRIVATE "_DARWIN_C_SOURCE")
+  endif()
 endforeach(prog)
 
 if(METIS_INSTALL)
