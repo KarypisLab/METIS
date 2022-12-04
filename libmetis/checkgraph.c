@@ -45,9 +45,11 @@ int CheckGraph(graph_t *graph, int numflag, int verbose)
 
   htable = ismalloc(nvtxs, 0, "htable");
 
-  minedge = maxedge = adjncy[0];
-  if (adjwgt) 
-    minewgt = maxewgt = adjwgt[0];
+  if (graph->nedges > 0) {
+    minedge = maxedge = adjncy[0];
+    if (adjwgt) 
+      minewgt = maxewgt = adjwgt[0];
+  }
 
   for (i=0; i<nvtxs; i++) {
     for (j=xadj[i]; j<xadj[i+1]; j++) {
