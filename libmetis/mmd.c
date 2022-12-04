@@ -59,24 +59,24 @@ void genmmd(idx_t neqns, idx_t *xadj, idx_t *adjncy, idx_t *invp, idx_t *perm,
     if (neqns <= 0)  
       return;
 
-    /* Adjust from C to Fortran */
+    /* adjust from C to Fortran */
     xadj--; adjncy--; invp--; perm--; head--; qsize--; list--; marker--;
 
-    /* initialization for the minimum degree algorithm. */
+    /* initialization for the minimum degree algorithm */
     *ncsub = 0;
     mmdint(neqns, xadj, adjncy, head, invp, perm, qsize, list, marker);
 
-    /*  'num' counts the number of ordered nodes plus 1. */
+    /* 'num' counts the number of ordered nodes plus 1 */
     num = 1;
 
-    /* eliminate all isolated nodes. */
+    /* eliminate all isolated nodes */
     nextmd = head[1];
     while (nextmd > 0) {
       mdeg_node = nextmd;
       nextmd = invp[mdeg_node];
       marker[mdeg_node] = maxint;
       invp[mdeg_node] = -num;
-      num = num + 1;
+      num++;
     }
 
     /* search for node of the minimum degree. 'mdeg' is the current */
@@ -87,14 +87,16 @@ void genmmd(idx_t neqns, idx_t *xadj, idx_t *adjncy, idx_t *invp, idx_t *perm,
     head[1] = 0;
     mdeg = 2;
 
-    /* infinite loop here ! */
+    /* infinite loop here */
     while (1) {
       while (head[mdeg] <= 0) 
         mdeg++;
 
       /* use value of 'delta' to set up 'mdlmt', which governs */
       /* when a degree update is to be performed.              */
-      mdlmt = mdeg + delta;
+      //mdlmt = mdeg + delta;
+      // the need for gk_min() was identified by jsf67
+      mdlmt = gk_min(neqns, mdeg+delta);
       ehead = 0;
 
 n500:
@@ -107,7 +109,7 @@ n500:
         mdeg_node = head[mdeg];
       };
 
-      /*  remove 'mdeg_node' from the degree structure. */
+      /* remove 'mdeg_node' from the degree structure */
       nextmd = invp[mdeg_node];
       head[mdeg] = nextmd;
       if (nextmd > 0)  
@@ -140,7 +142,7 @@ n500:
       /* minimum degree nodes elimination.            */
       if (num > neqns)  
         goto n1000;
-      mmdupd( ehead, neqns, xadj, adjncy, delta, &mdeg, head, invp, perm, qsize, list, marker, maxint, &tag);
+      mmdupd(ehead, neqns, xadj, adjncy, delta, &mdeg, head, invp, perm, qsize, list, marker, maxint, &tag);
     }; /* end of -- while ( 1 ) -- */
 
 n1000:
@@ -289,6 +291,7 @@ n1100:
       return;
  }
 
+
 /***************************************************************************
 *    mmdint ---- mult minimum degree initialization
 *    purpose -- this routine performs initialization for the
@@ -305,32 +308,29 @@ n1100:
 idx_t  mmdint(idx_t neqns, idx_t *xadj, idx_t *adjncy, idx_t *head, idx_t *forward,
      idx_t *backward, idx_t *qsize, idx_t *list, idx_t *marker)
 {
-    idx_t  fnode, ndeg, node;
+  idx_t fnode, ndeg, node;
 
-    for ( node = 1; node <= neqns; node++ ) {
-        head[node] = 0;
-        qsize[node] = 1;
-        marker[node] = 0;
-        list[node] = 0;
-    };
+  for (node=1; node<=neqns; node++) {
+    head[node] = 0;
+    qsize[node] = 1;
+    marker[node] = 0;
+    list[node] = 0;
+  };
 
-    /* initialize the degree doubly linked lists. */
-    for ( node = 1; node <= neqns; node++ ) {
-        // The following is something that Olaf Schenk identified as potentially a
-        // bug that I introduced in the original code. For now, I reverted back
-        // to the original code until I have some time to check.
-        // ndeg = xadj[node+1] - xadj[node]/* + 1*/;   /* george */
-        ndeg = xadj[node+1] - xadj[node] + 1;
-        if (ndeg == 0)
-          ndeg = 1;
-        fnode = head[ndeg];
-        forward[node] = fnode;
-        head[ndeg] = node;
-        if ( fnode > 0 ) backward[fnode] = node;
-        backward[node] = -ndeg;
-    };
-    return 0;
+  /* initialize the degree doubly linked lists. */
+  for (node=1; node<=neqns; node++) {
+    ndeg = xadj[node+1]-xadj[node]+1;
+    fnode = head[ndeg];
+    forward[node] = fnode;
+    head[ndeg] = node;
+    if (fnode > 0)
+      backward[fnode] = node;
+    backward[node] = -ndeg;
+  };
+
+  return 0;
 }
+
 
 /****************************************************************************
 * mmdnum --- multi minimum degree numbering
@@ -394,6 +394,7 @@ void mmdnum(idx_t neqns, idx_t *perm, idx_t *invp, idx_t *qsize)
   };
   return;
 }
+
 
 /****************************************************************************
 * mmdupd ---- multiple minimum degree update
