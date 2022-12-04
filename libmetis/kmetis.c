@@ -67,12 +67,11 @@ int METIS_PartGraphKway(idx_t *nvtxs, idx_t *ncon, idx_t *xadj, idx_t *adjncy,
   IFSET(ctrl->dbglvl, METIS_DBG_TIME, InitTimers(ctrl));
   IFSET(ctrl->dbglvl, METIS_DBG_TIME, gk_startcputimer(ctrl->TotalTmr));
 
-  if (ctrl->dbglvl&512) {
-    *objval = BlockKWayPartitioning(ctrl, graph, part);
-  }
-  else {
-    *objval = MlevelKWayPartitioning(ctrl, graph, part);
-  }
+  iset(*nvtxs, 0, part);
+  if (ctrl->dbglvl&512)
+    *objval = (*nparts == 1 ? 0 : BlockKWayPartitioning(ctrl, graph, part));
+  else
+    *objval = (*nparts == 1 ? 0 : MlevelKWayPartitioning(ctrl, graph, part));
 
   IFSET(ctrl->dbglvl, METIS_DBG_TIME, gk_stopcputimer(ctrl->TotalTmr));
   IFSET(ctrl->dbglvl, METIS_DBG_TIME, PrintTimers(ctrl));
