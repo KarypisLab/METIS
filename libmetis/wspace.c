@@ -29,7 +29,6 @@ void AllocateWorkSpace(ctrl_t *ctrl, graph_t *graph)
                  5*(ctrl->nparts+1)*graph->ncon*sizeof(idx_t) + 
                  5*(ctrl->nparts+1)*graph->ncon*sizeof(real_t);
   }
-  /*coresize = 0;*/
   ctrl->mcore = gk_mcoreCreate(coresize);
 
   ctrl->nbrpoolsize = 0;

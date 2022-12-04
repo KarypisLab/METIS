@@ -95,7 +95,7 @@ ctrl_t *SetupCtrl(moptype_et optype, idx_t *options, idx_t ncon, idx_t nparts,
 
   /* setup the target partition weights */
   if (ctrl->optype != METIS_OP_OMETIS) {
-    ctrl->tpwgts = rsmalloc((nparts+2)*ncon, 0.0, "SetupCtrl: ctrl->tpwgts");
+    ctrl->tpwgts = rsmalloc(nparts*ncon, 0.0, "SetupCtrl: ctrl->tpwgts");
     if (tpwgts) {
       rcopy(nparts*ncon, tpwgts, ctrl->tpwgts);
     }
