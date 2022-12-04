@@ -34,7 +34,7 @@
 
     \param[in] adjncy is an array of size to the sum of the degrees of the
            graph that stores for each vertex the set of vertices that
-           is adjancent to.
+           is adjacent to.
 
     \param[in] vwgt is an array of size nvtxs*ncon that stores the weights
            of the vertices for each constraint. The ncon weights for the

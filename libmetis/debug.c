@@ -3,7 +3,7 @@
  *
  * debug.c
  *
- * This file contains code that performs self debuging
+ * This file contains code that performs self debugging
  *
  * Started 7/24/97
  * George

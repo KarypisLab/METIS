@@ -316,7 +316,7 @@ void FM_2WayNodeRefine1SidedP(ctrl_t *ctrl, graph_t *graph,
 
       ASSERT(bndptr[higain] != -1);
 
-      /* The following check is to ensure we break out if there is a posibility
+      /* The following check is to ensure we break out if there is a possibility
          of over-running the mind array.  */
       if (nmind + xadj[higain+1]-xadj[higain] >= 2*nvtxs-1)
         break;
@@ -574,7 +574,7 @@ void FM_2WayNodeRefine2SidedP(ctrl_t *ctrl, graph_t *graph,
 
       ASSERT(bndptr[higain] != -1);
 
-      /* The following check is to ensure we break out if there is a posibility
+      /* The following check is to ensure we break out if there is a possibility
          of over-running the mind array.  */
       if (nmind + xadj[higain+1]-xadj[higain] >= 2*nvtxs-1)
         break;

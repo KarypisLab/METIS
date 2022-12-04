@@ -98,7 +98,7 @@ typedef struct graph_t {
 
   idx_t *cmap;  /* The contraction/coarsening map */
 
-  idx_t *label; /* The labels of the vertices for recusive bisection (pmetis/ometis) */
+  idx_t *label; /* The labels of the vertices for recursive bisection (pmetis/ometis) */
 
   /* Partition parameters */
   idx_t mincut, minvol;
@@ -148,7 +148,7 @@ typedef struct mesh_t {
 typedef struct ctrl_t {
   moptype_et  optype;	        /* Type of operation */
   mobjtype_et objtype;          /* Type of refinement objective */
-  mdbglvl_et  dbglvl;		/* Controls the debuging output of the program */
+  mdbglvl_et  dbglvl;		/* Controls the debugging output of the program */
   mctype_et   ctype;		/* The type of coarsening */
   miptype_et  iptype;		/* The type of initial partitioning */
   mrtype_et   rtype;		/* The type of refinement */
@@ -158,7 +158,7 @@ typedef struct ctrl_t {
   idx_t no2hop;                 /* Indicates if 2-hop matching will be used */
   idx_t ondisk;                 /* Indicates out-of-core execution */
   idx_t minconn;                /* Indicates if the subdomain connectivity will be minimized */
-  idx_t contig;                 /* Indicates if contigous partitions are required */
+  idx_t contig;                 /* Indicates if contiguous partitions are required */
   idx_t nseps;			/* The number of separators to be found during multiple bisections */
   idx_t ufactor;                /* The user-supplied load imbalance factor */
   idx_t compress;               /* If the graph will be compressed prior to ordering */
@@ -209,7 +209,7 @@ typedef struct ctrl_t {
   idx_t *nads;                  /* The number of adjacent domains */
   idx_t **adids;                /* The IDs of the adjacent domains */
   idx_t **adwgts;               /* The edge-weight to the adjacent domains */
-  idx_t *pvec1, *pvec2;         /* Auxiliar nparts-size vectors for efficiency */
+  idx_t *pvec1, *pvec2;         /* Auxiliary nparts-size vectors for efficiency */
 
   /* ondisk related info */
   pid_t pid;            /*!< The pid of the running process */

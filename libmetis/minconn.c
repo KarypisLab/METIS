@@ -678,7 +678,7 @@ void MoveGroupMinConnForVol(ctrl_t *ctrl, graph_t *graph, idx_t to, idx_t nind,
 
 
 /*************************************************************************/
-/*! This function computes the subdomain graph. For deubuging purposes. */
+/*! This function computes the subdomain graph. For deubugging purposes. */
 /*************************************************************************/
 void PrintSubDomainGraph(graph_t *graph, idx_t nparts, idx_t *where)
 {

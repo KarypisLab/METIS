@@ -452,7 +452,7 @@ void SelectQueue(graph_t *graph, real_t *pijbm, real_t *ubfactors,
   for (max=0.0, part=0; part<2; part++) {
     for (i=0; i<ncon; i++) {
       tmp = graph->pwgts[part*ncon+i]*pijbm[part*ncon+i] - ubfactors[i];
-      /* the '=' in the test bellow is to ensure that under tight constraints
+      /* the '=' in the test below is to ensure that under tight constraints
          the partition that is at the max is selected */
       if (tmp >= max) { 
         max   = tmp;

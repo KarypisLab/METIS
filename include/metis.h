@@ -37,8 +37,8 @@
  Specifies the data type that will hold floating-point style information.
 
  Possible values:
-   32 : single precission floating point (float)
-   64 : double precission floating point (double)
+   32 : single precision floating point (float)
+   64 : double precision floating point (double)
 --------------------------------------------------------------------------*/
 //#define REALTYPEWIDTH 32
 

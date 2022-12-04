@@ -99,7 +99,7 @@ SIGTHROW:
     \param graph is the graph to be partitioned
     \param part is the vector that on return will store the partitioning
 
-    \returns the objective value of the partitoning. The partitioning 
+    \returns the objective value of the partitioning. The partitioning 
              itself is stored in the part vector.
 */
 /*************************************************************************/
@@ -255,7 +255,7 @@ void InitKWayPartitioning(ctrl_t *ctrl, graph_t *graph)
     \param graph is the graph to be partitioned
     \param part is the vector that on return will store the partitioning
 
-    \returns the objective value of the partitoning. The partitioning 
+    \returns the objective value of the partitioning. The partitioning 
              itself is stored in the part vector.
 */
 /*************************************************************************/
@@ -442,7 +442,7 @@ void BalanceAndRefineLP(ctrl_t *ctrl, graph_t *graph, idx_t nparts, idx_t *where
   /* for randomly visiting the vertices */
   perm = iincset(nvtxs, 0, iwspacemalloc(ctrl, nvtxs));
 
-  /* for keeping track of adjancent partitions */
+  /* for keeping track of adjacent partitions */
   nbrids  = iwspacemalloc(ctrl, nparts);
   nbrwgts = iset(nparts, 0, iwspacemalloc(ctrl, nparts));
   nbrmrks = iset(nparts, -1, iwspacemalloc(ctrl, nparts));

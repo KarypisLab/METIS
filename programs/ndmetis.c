@@ -3,7 +3,7 @@
  *
  * ndmetis.c
  *
- * Driver programs for nested disection ordering
+ * Driver programs for nested dissection ordering
  *
  * Started 8/28/94
  * George
