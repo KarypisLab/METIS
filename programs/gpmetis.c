@@ -245,9 +245,8 @@ void GPReportResults(params_t *params, graph_t *graph, idx_t *part, idx_t objval
     getrusage(RUSAGE_SELF, &usage);
     printf("  rusage.ru_maxrss:\t\t %7.3"PRREAL" MB\n", (real_t)(usage.ru_maxrss/(1024.0)));
   }
-#endif
-
   printf("  proc/self/stat/VmPeak:\t %7.3"PRREAL" MB\n", (real_t)gk_GetProcVmPeak()/(1024.0*1024.0));
+#endif
 
   printf("******************************************************************************\n");
 }
