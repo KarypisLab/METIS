@@ -49,9 +49,9 @@ if(${CMAKE_C_COMPILER_ID} STREQUAL "Intel")
   #  set(GK_COPTIONS "${GK_COPTIONS} -fast")
 endif()
 
-# Add support for the Accelerate framework in OS X
+# Add support for MacOS items 
 if(APPLE)
-  set(GK_COPTIONS "${GK_COPTIONS} -framework Accelerate")
+  set(GK_COPTIONS "${GK_COPTIONS} -DMACOS")
 endif(APPLE)
 
 # Find OpenMP if it is requested.
