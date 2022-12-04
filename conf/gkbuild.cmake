@@ -51,7 +51,7 @@ endif()
 
 # Add support for the Accelerate framework in OS X
 if(APPLE)
-  set(GK_COPTIONS "${GK_COPTIONS} -framework Accelerate")
+  set(GK_COPTIONS "${GK_COPTIONS} -framework Accelerate -DMACOS")
 endif(APPLE)
 
 # Find OpenMP if it is requested.

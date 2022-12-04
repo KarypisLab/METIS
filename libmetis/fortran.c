@@ -45,6 +45,7 @@ void Change2FNumbering(idx_t nvtxs, idx_t *xadj, idx_t *adjncy, idx_t *vector)
     xadj[i]++;
 }
 
+
 /*************************************************************************/
 /*! This function changes the numbering to start from 1 instead of 0 */
 /*************************************************************************/
@@ -59,7 +60,6 @@ void Change2FNumbering2(idx_t nvtxs, idx_t *xadj, idx_t *adjncy)
   for (i=0; i<=nvtxs; i++)
     xadj[i]++;
 }
-
 
 
 /*************************************************************************/
@@ -83,7 +83,6 @@ void Change2FNumberingOrder(idx_t nvtxs, idx_t *xadj, idx_t *adjncy,
     xadj[i]++;
 
 }
-
 
 
 /*************************************************************************/
