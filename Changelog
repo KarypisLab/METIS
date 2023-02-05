@@ -1,3 +1,12 @@
+metis-5.2.1
+------------------------------------------------------------------------
+f5ae915 | karypis | 2022-12-05 07:27:57 -0600 (Mon, 05 Dec 2022)
+
+- Added RCM-based reordering auxialiary routine
+  METIS_CacheFriendlyReordering.
+- Improved multi-way BFS and further refined LP-based refinement.
+- GKlib became an external dependency.
+
 
 metis-5.1.0
 ------------------------------------------------------------------------
