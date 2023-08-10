@@ -22,16 +22,16 @@ include(conf/gkbuild.cmake)
 # METIS' custom options
 option(METIS_IDX64 "enable 64 bit ints" OFF)
 option(METIS_REAL64 "enable 64 bit floats (i.e., double)" OFF)
-if(IDX64)
+if(METIS_IDX64)
     set(IDXTYPEWIDTH 64)
 else()
     set(IDXTYPEWIDTH 32)
-endif(IDX64)
-if(REAL64)
+endif(METIS_IDX64)
+if(METIS_REAL64)
     set(REALTYPEWIDTH 64)
 else()
     set(REALTYPEWIDTH 32)
-endif(REAL64)
+endif(METIS_REAL64)
 configure_file (
     "${CMAKE_CURRENT_SOURCE_DIR}/include/metis.h.in"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/metis.h"
