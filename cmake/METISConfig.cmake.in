@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+## Define exported variables
+set(METIS_IDXTYPEWIDTH @METIS_IDXTYPEWIDTH@)
+set(METIS_REALTYPEWIDTH @METIS_REALTYPEWIDTH@)
+
+## Add all exported targets
+include(${CMAKE_CURRENT_LIST_DIR}/METISTargets.cmake)
