@@ -62,3 +62,6 @@ GKlib
 
 include/metis.h
 
+### Project specific
+CMakeUserPresets.json
+cmake-build-*
