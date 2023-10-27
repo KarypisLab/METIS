@@ -76,8 +76,8 @@ set(BUILD_SHARED_LIBS ${METIS_SHARED_LIBS})
 ]==============================================================================================]
 
 FetchContent_Declare(GKlib
-		GIT_REPOSITORY https://github.com/KarypisLab/GKlib
-		GIT_TAG master
+		GIT_REPOSITORY https://github.com/LecrisUT/GKlib
+		GIT_TAG cmake/modernization
 		FIND_PACKAGE_ARGS CONFIG
 )
 FetchContent_MakeAvailable(GKlib)
