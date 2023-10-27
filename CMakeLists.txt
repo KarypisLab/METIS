@@ -59,6 +59,8 @@ add_feature_info(METIS_REAL64 METIS_REAL64 "Build with 64 bit floats")
 ]==============================================================================================]
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+# Add some helper functions
+include(METIS)
 
 # Include basic tools
 include(FetchContent)
@@ -79,7 +81,6 @@ set(BUILD_SHARED_LIBS ${METIS_SHARED_LIBS})
 
 set(gklib_find_package_args CONFIG)
 if (METIS_OpenMP)
-	set(GKLIB_OpenMP ON CACHE BOOL "METIS: overload" FORCE)
 	if (NOT COMPONENTS IN_LIST gklib_find_package_args)
 		list(APPEND gklib_find_package_args COMPONENTS)
 	endif ()
@@ -90,7 +91,7 @@ FetchContent_Declare(GKlib
 		GIT_TAG cmake/modernization
 		FIND_PACKAGE_ARGS ${gklib_find_package_args}
 )
-FetchContent_MakeAvailable(GKlib)
+METIS_FetchContent_MakeAvailable(GKlib)
 
 include(METIS_PackagesInfo)
 
