@@ -17,11 +17,14 @@ jobs:
       fail-fast: false
       matrix:
         toolchain: [ gcc, llvm, intel, windows, macos ]
+        openmp: [ ON, OFF ]
         include:
           - os: windows-latest
             toolchain: windows
           - os: macos-latest
             toolchain: macos
+    env:
+      WITH_OPENMP: ${{ matrix.openmp }}
     steps:
       - name: Enable msvc toolchain on windows
         uses: ilammy/msvc-dev-cmd@v1

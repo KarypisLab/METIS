@@ -19,6 +19,10 @@
         "METIS_PROGRAMS": {
           "type": "BOOL",
           "value": true
+        },
+        "METIS_OpenMP": {
+          "type": "BOOL",
+          "value": "$env{WITH_OPENMP}"
         }
       },
       "errors": {
