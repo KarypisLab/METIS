@@ -37,6 +37,10 @@ target_sources(METIS_METIS PRIVATE
 )
 target_link_libraries(METIS_METIS PRIVATE GKlib::GKlib)
 
+if (TARGET GKlib_GKlib)
+	target_compile_options(GKlib_GKlib PRIVATE -fPIC)
+endif ()
+
 # Install
 if (METIS_INSTALL)
 	install(TARGETS METIS_METIS
