@@ -21,8 +21,15 @@ jobs:
         include:
           - os: windows-latest
             toolchain: windows
+            # regex library is not available?
+            experimental: true
           - os: macos-latest
             toolchain: macos
+          - os: macos-latest
+            toolchain: macos
+            openmp: ON
+            # Need to find how to install openmp on macos
+            experimental: true
     env:
       WITH_OPENMP: ${{ matrix.openmp }}
     steps:
