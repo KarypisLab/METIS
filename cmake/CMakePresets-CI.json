@@ -1,0 +1,309 @@
+{
+  "version": 6,
+  "include": [
+    "CMakePresets-defaults.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "ci-base",
+      "hidden": true,
+      "generator": "Ninja",
+      "inherits": [
+        "default"
+      ],
+      "cacheVariables": {
+        "METIS_TESTS": {
+          "type": "BOOL",
+          "value": true
+        },
+        "METIS_PROGRAMS": {
+          "type": "BOOL",
+          "value": true
+        },
+        "METIS_OpenMP": {
+          "type": "BOOL",
+          "value": "$env{WITH_OPENMP}"
+        }
+      },
+      "errors": {
+        "deprecated": true
+      }
+    },
+    {
+      "name": "gcc-ci",
+      "displayName": "GCC toolchain",
+      "inherits": [
+        "ci-base"
+      ],
+      "binaryDir": "cmake-build-ci-gcc",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": {
+          "type": "FILEPATH",
+          "value": "gcc"
+        },
+        "CMAKE_LINKER_TYPE": {
+          "type": "STRING",
+          "value": "SYSTEM"
+        }
+      }
+    },
+    {
+      "name": "intel-ci",
+      "displayName": "Intel toolchain",
+      "inherits": [
+        "ci-base"
+      ],
+      "binaryDir": "cmake-build-ci-intel",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": {
+          "type": "FILEPATH",
+          "value": "icx"
+        },
+        "CMAKE_LINKER_TYPE": {
+          "type": "STRING",
+          "value": "SYSTEM"
+        }
+      }
+    },
+    {
+      "name": "llvm-ci",
+      "displayName": "LLVM (Clang) toolchain",
+      "inherits": [
+        "ci-base"
+      ],
+      "binaryDir": "cmake-build-ci-llvm",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": {
+          "type": "FILEPATH",
+          "value": "clang"
+        },
+        "CMAKE_LINKER_TYPE": {
+          "type": "STRING",
+          "value": "LLD"
+        }
+      }
+    },
+    {
+      "name": "windows-ci",
+      "displayName": "Windows native toolchain",
+      "inherits": [
+        "ci-base"
+      ],
+      "binaryDir": "cmake-build-ci-windows",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": {
+          "type": "FILEPATH",
+          "value": "cl"
+        }
+      }
+    },
+    {
+      "name": "macos-ci",
+      "displayName": "MacOS native toolchain",
+      "inherits": [
+        "ci-base"
+      ],
+      "binaryDir": "cmake-build-ci-macos",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": {
+          "type": "FILEPATH",
+          "value": "clang"
+        }
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "ci-base",
+      "hidden": true,
+      "inherits": [
+        "default"
+      ],
+      "cleanFirst": true
+    },
+    {
+      "name": "gcc-ci",
+      "displayName": "GCC toolchain",
+      "inherits": [
+        "ci-base"
+      ],
+      "configurePreset": "gcc-ci"
+    },
+    {
+      "name": "intel-ci",
+      "displayName": "Intel toolchain",
+      "inherits": [
+        "ci-base"
+      ],
+      "configurePreset": "intel-ci"
+    },
+    {
+      "name": "llvm-ci",
+      "displayName": "LLVM (Clang) toolchain",
+      "inherits": [
+        "ci-base"
+      ],
+      "configurePreset": "llvm-ci"
+    },
+    {
+      "name": "windows-ci",
+      "displayName": "Windows native toolchain",
+      "inherits": [
+        "ci-base"
+      ],
+      "configurePreset": "windows-ci"
+    },
+    {
+      "name": "macos-ci",
+      "displayName": "MacOS native toolchain",
+      "inherits": [
+        "ci-base"
+      ],
+      "configurePreset": "macos-ci"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "ci-base",
+      "hidden": true,
+      "inherits": [
+        "default"
+      ],
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "gcc-ci",
+      "displayName": "GCC toolchain",
+      "inherits": [
+        "ci-base"
+      ],
+      "configurePreset": "gcc-ci"
+    },
+    {
+      "name": "intel-ci",
+      "displayName": "Intel toolchain",
+      "inherits": [
+        "ci-base"
+      ],
+      "configurePreset": "intel-ci"
+    },
+    {
+      "name": "llvm-ci",
+      "displayName": "LLVM (Clang) toolchain",
+      "inherits": [
+        "ci-base"
+      ],
+      "configurePreset": "llvm-ci"
+    },
+    {
+      "name": "windows-ci",
+      "displayName": "Windows native toolchain",
+      "inherits": [
+        "ci-base"
+      ],
+      "configurePreset": "windows-ci"
+    },
+    {
+      "name": "macos-ci",
+      "displayName": "MacOS native toolchain",
+      "inherits": [
+        "ci-base"
+      ],
+      "configurePreset": "macos-ci"
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "gcc-ci",
+      "displayName": "GCC toolchain",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "gcc-ci"
+        },
+        {
+          "type": "build",
+          "name": "gcc-ci"
+        },
+        {
+          "type": "test",
+          "name": "gcc-ci"
+        }
+      ]
+    },
+    {
+      "name": "intel-ci",
+      "displayName": "Intel toolchain",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "intel-ci"
+        },
+        {
+          "type": "build",
+          "name": "intel-ci"
+        },
+        {
+          "type": "test",
+          "name": "intel-ci"
+        }
+      ]
+    },
+    {
+      "name": "llvm-ci",
+      "displayName": "LLVM (Clang) toolchain",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "llvm-ci"
+        },
+        {
+          "type": "build",
+          "name": "llvm-ci"
+        },
+        {
+          "type": "test",
+          "name": "llvm-ci"
+        }
+      ]
+    },
+    {
+      "name": "windows-ci",
+      "displayName": "Windows native toolchain",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-ci"
+        },
+        {
+          "type": "build",
+          "name": "windows-ci"
+        },
+        {
+          "type": "test",
+          "name": "windows-ci"
+        }
+      ]
+    },
+    {
+      "name": "macos-ci",
+      "displayName": "MacOS native toolchain",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "macos-ci"
+        },
+        {
+          "type": "build",
+          "name": "macos-ci"
+        },
+        {
+          "type": "test",
+          "name": "macos-ci"
+        }
+      ]
+    }
+  ]
+}

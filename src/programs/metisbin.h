@@ -22,7 +22,7 @@
 #include <assert.h>
 
 
-#if defined(ENABLE_OPENMP)
+#if defined(_OPENMP)
   #include <omp.h>
 #endif
 

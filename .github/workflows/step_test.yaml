@@ -1,0 +1,62 @@
+name: test
+run-name: Run tests
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Check ${{ matrix.toolchain }}
+    runs-on: ${{ matrix.os || 'ubuntu-latest' }}
+    container: ${{ !matrix.os && 'ghcr.io/lecrisut/dev-env:main' || '' }}
+    continue-on-error: ${{ matrix.experimental || false }}
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain: [ gcc, llvm, intel, windows, macos ]
+        openmp: [ ON, OFF ]
+        include:
+          - os: windows-latest
+            toolchain: windows
+            # regex library is not available?
+            experimental: true
+          - os: macos-latest
+            toolchain: macos
+          - os: macos-latest
+            toolchain: macos
+            openmp: ON
+            # Need to find how to install openmp on macos
+            experimental: true
+    env:
+      WITH_OPENMP: ${{ matrix.openmp }}
+    steps:
+      - name: Enable msvc toolchain on windows
+        uses: ilammy/msvc-dev-cmd@v1
+        if: contains(matrix.os, 'windows')
+      - name: Activate Intel compilers
+        # Not elegant, it will propagate all environment variable.
+        # Intel does not provide a way to output the environment variables to a file
+        # Note: PATH needs to be exported to GITHUB_PATH otherwise it can be overwritten
+        run: |
+          source /opt/intel/oneapi/setvars.sh
+          printenv >> $GITHUB_ENV
+          echo $PATH >> $GITHUB_PATH
+        if: matrix.toolchain == 'intel'
+      - uses: actions/checkout@v4
+      - uses: lukka/get-cmake@latest
+      - name: Run CMake configuration for ${{ matrix.toolchain }} toolchain
+        uses: lukka/run-cmake@v10.3
+        with:
+          workflowPreset: "${{ matrix.toolchain }}-ci"
+  pass:
+    needs: [ tests ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check test jobs
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
+    if: always()
