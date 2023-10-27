@@ -107,13 +107,9 @@ set_target_properties(METIS_METIS PROPERTIES
 )
 add_library(METIS::METIS ALIAS METIS_METIS)
 
-# Main definitions inside libmetis
+# Main definitions inside src
 add_subdirectory(include)
-add_subdirectory(libmetis)
-
-if (METIS_PROGRAMS)
-	add_subdirectory(programs)
-endif ()
+add_subdirectory(src)
 
 # Testing
 if (METIS_TESTS)
