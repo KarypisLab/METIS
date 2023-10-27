@@ -45,6 +45,8 @@ include(FeatureSummary)
 option(METIS_TESTS "METIS: Build unit tests" ${PROJECT_IS_TOP_LEVEL})
 option(METIS_SHARED_LIBS "METIS: Build as a shared library" ${PROJECT_IS_TOP_LEVEL})
 option(METIS_INSTALL "METIS: Install project" ${PROJECT_IS_TOP_LEVEL})
+option(METIS_OpenMP "METIS: Enable OpenMP support" OFF)
+add_feature_info(METIS_OpenMP METIS_OpenMP "OpenMP support")
 option(METIS_PROGRAMS "METIS: Build executable programs" OFF)
 add_feature_info(METIS_PROGRAMS METIS_PROGRAMS "Build executable programs")
 option(METIS_IDX64 "METIS: Build with 64 bit ints" OFF)
@@ -75,10 +77,18 @@ set(BUILD_SHARED_LIBS ${METIS_SHARED_LIBS})
 #                                       External packages                                       #
 ]==============================================================================================]
 
+set(gklib_find_package_args CONFIG)
+if (METIS_OpenMP)
+	set(GKLIB_OpenMP ON CACHE BOOL "METIS: overload" FORCE)
+	if (NOT COMPONENTS IN_LIST gklib_find_package_args)
+		list(APPEND gklib_find_package_args COMPONENTS)
+	endif ()
+	list(APPEND gklib_find_package_args OpenMP)
+endif ()
 FetchContent_Declare(GKlib
 		GIT_REPOSITORY https://github.com/LecrisUT/GKlib
 		GIT_TAG cmake/modernization
-		FIND_PACKAGE_ARGS CONFIG
+		FIND_PACKAGE_ARGS ${gklib_find_package_args}
 )
 FetchContent_MakeAvailable(GKlib)
 
