@@ -59,7 +59,11 @@ function(METIS_add_test test)
 endfunction()
 
 foreach (test IN ITEMS
-		mtest
 )
-	METIS_add_test(${test})
+	# TODO: Implement some regression tests with METIS_add_test
 endforeach ()
+# TODO: Decouple mtest to be independent from other dependencies
+if (METIS_PROGRAMS)
+	# TODO: Currently reusing METIS_cli target
+#	add_subdirectory(mtest)
+endif ()

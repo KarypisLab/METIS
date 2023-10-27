@@ -46,6 +46,8 @@ target_sources(METIS_cli PRIVATE
 		smbfactor.c
 )
 target_link_libraries(METIS_cli PUBLIC GKlib::GKlib METIS_METIS)
+# Add include_directories for mtest to use
+target_include_directories(METIS_cli PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_sources(METIS_gpmetis PRIVATE
 		gpmetis.c
 		cmdline_gpmetis.c
