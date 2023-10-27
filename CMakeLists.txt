@@ -70,14 +70,18 @@ endif ()
 # Define basic parameters
 set(BUILD_SHARED_LIBS ${METIS_SHARED_LIBS})
 
-include(conf/gkbuild.cmake)
-
 
 #[==============================================================================================[
 #                                       External packages                                       #
 ]==============================================================================================]
 
-find_package(GKlib CONFIG)
+FetchContent_Declare(GKlib
+		GIT_REPOSITORY https://github.com/KarypisLab/GKlib
+		GIT_TAG master
+		FIND_PACKAGE_ARGS CONFIG
+)
+FetchContent_MakeAvailable(GKlib)
+
 include(METIS_PackagesInfo)
 
 feature_summary(
