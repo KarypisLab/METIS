@@ -57,4 +57,7 @@
 #define KMETIS_DEFAULT_UFACTOR          30
 #define OMETIS_DEFAULT_UFACTOR          200
 
+/* Metis error during recursive bisection */
+#define METIS_ERR_INVALID_BISECTION -999999
+
 #endif

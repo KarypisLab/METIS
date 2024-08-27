@@ -132,6 +132,9 @@ int METIS_PartGraphRecursive(idx_t *nvtxs, idx_t *ncon, idx_t *xadj,
   iset(*nvtxs, 0, part);
   *objval = (*nparts == 1 ? 0 : MlevelRecursiveBisection(ctrl, graph, *nparts, part, ctrl->tpwgts, 0));
 
+  if (*objval == METIS_ERR_INVALID_BISECTION)
+    return metis_rcode(METIS_ERR_INVALID_BISECTION);
+
   IFSET(ctrl->dbglvl, METIS_DBG_TIME, gk_stopcputimer(ctrl->TotalTmr));
   IFSET(ctrl->dbglvl, METIS_DBG_TIME, PrintTimers(ctrl));
 
@@ -165,7 +168,7 @@ idx_t MlevelRecursiveBisection(ctrl_t *ctrl, graph_t *graph, idx_t nparts,
   if ((nvtxs = graph->nvtxs) == 0) {
     printf("\t***Cannot bisect a graph with 0 vertices!\n"
            "\t***You are trying to partition a graph into too many parts!\n");
-    return 0;
+    return METIS_ERR_INVALID_BISECTION;
   }
 
   ncon = graph->ncon;
@@ -203,16 +206,28 @@ idx_t MlevelRecursiveBisection(ctrl_t *ctrl, graph_t *graph, idx_t nparts,
   }
 
   /* Do the recursive call */
+  idx_t lobjval, robjval;
   if (nparts > 3) {
-    objval += MlevelRecursiveBisection(ctrl, lgraph, (nparts>>1), part, 
+    lobjval = MlevelRecursiveBisection(ctrl, lgraph, (nparts>>1), part, 
                tpwgts, fpart);
-    objval += MlevelRecursiveBisection(ctrl, rgraph, nparts-(nparts>>1), part, 
+    robjval = MlevelRecursiveBisection(ctrl, rgraph, nparts-(nparts>>1), part, 
                tpwgts+(nparts>>1)*ncon, fpart+(nparts>>1));
+
+    if (lobjval != METIS_ERR_INVALID_BISECTION && robjval != METIS_ERR_INVALID_BISECTION) {
+      objval += lobjval + robjval;
+    }
+    else
+      objval = METIS_ERR_INVALID_BISECTION;
   }
   else if (nparts == 3) {
     FreeGraph(&lgraph);
-    objval += MlevelRecursiveBisection(ctrl, rgraph, nparts-(nparts>>1), part, 
+    robjval = MlevelRecursiveBisection(ctrl, rgraph, nparts-(nparts>>1), part, 
                tpwgts+(nparts>>1)*ncon, fpart+(nparts>>1));
+    if (robjval != METIS_ERR_INVALID_BISECTION) {
+      objval += robjval;
+    }
+    else
+      objval = METIS_ERR_INVALID_BISECTION;
   }
 
 
