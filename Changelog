@@ -117,7 +117,7 @@ r1437 | karypis | 2007-04-07 23:16:16 -0500 (Sat, 07 Apr 2007)
 - Fixed some bad memory allocation calls (i.e., sizeof(x)/sizeof(idxtype). 
   However, there are tons of those and need to be corrected once and for
   all by eliminating workspace and the associated mallocs.
-- Added mprint/mscanf family of functions for portable formated I/O
+- Added mprint/mscanf family of functions for portable formatted I/O
   of the idxtype datatype. The specifier for this datatype is %D.
   All library routines use this function for printing. 
   The implementation of these routines is not very efficient, but

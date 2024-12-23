@@ -13,7 +13,7 @@
 
 /*************************************************************************/
 /*! This function computes the subdomain graph storing the result in the
-    pre-allocated worspace arrays */
+    pre-allocated workspace arrays */
 /*************************************************************************/
 void ComputeSubDomainGraph(ctrl_t *ctrl, graph_t *graph)
 {

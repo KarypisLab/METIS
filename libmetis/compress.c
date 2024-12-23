@@ -109,10 +109,10 @@ graph_t *CompressGraph(ctrl_t *ctrl, idx_t nvtxs, idx_t *xadj, idx_t *adjncy,
       for (j=cptr[i]; j<cptr[i+1]; j++) {
         ii = cind[j];
 
-        /* accumulate the vertex weights of the consistuent vertices */
+        /* accumulate the vertex weights of the constituent vertices */
         cvwgt[i] += (vwgt == NULL ? 1 : vwgt[ii]);
 
-        /* generate the combined adjancency list */
+        /* generate the combined adjacency list */
         for (jj=xadj[ii]; jj<xadj[ii+1]; jj++) {
           k = map[adjncy[jj]];
           if (mark[k] != i) {

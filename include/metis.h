@@ -112,7 +112,7 @@ typedef __int64 int64_t;
 #endif
   #define iabs          labs
 #else
-  #error "Incorrect user-supplied value fo IDXTYPEWIDTH"
+  #error "Incorrect user-supplied value of IDXTYPEWIDTH"
 #endif
 
 
