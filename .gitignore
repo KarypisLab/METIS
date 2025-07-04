@@ -60,3 +60,5 @@ graphs/*.npart.*
 GKlib
 .svn/
 
+include/metis.h
+

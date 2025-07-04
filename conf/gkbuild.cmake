@@ -3,16 +3,16 @@ include(CheckFunctionExists)
 include(CheckIncludeFile)
 
 # Setup options.
-option(GDB "enable use of GDB" OFF)
-option(ASSERT "turn asserts on" OFF)
-option(ASSERT2 "additional assertions" OFF)
-option(DEBUG "add debugging support" OFF)
-option(GPROF "add gprof support" OFF)
-option(VALGRIND "add valgrind support" OFF)
-option(OPENMP "enable OpenMP support" OFF)
-option(PCRE "enable PCRE support" OFF)
-option(GKREGEX "enable GKREGEX support" OFF)
-option(GKRAND "enable GKRAND support" OFF)
+option(GKLIB_GDB "enable use of GDB" OFF)
+option(GKLIB_ASSERT "turn asserts on" OFF)
+option(GKLIB_ASSERT2 "additional assertions" OFF)
+option(GKLIB_DEBUG "add debugging support" OFF)
+option(GKLIB_GPROF "add gprof support" OFF)
+option(GKLIB_VALGRIND "add valgrind support" OFF)
+option(GKLIB_OPENMP "enable OpenMP support" OFF)
+option(GKLIB_PCRE "enable PCRE support" OFF)
+option(GKLIB_GKREGEX "enable GKREGEX support" OFF)
+option(GKLIB_GKRAND "enable GKRAND support" OFF)
 
 # Add compiler flags.
 if(MSVC)
@@ -29,7 +29,7 @@ endif(CYGWIN)
 if(CMAKE_COMPILER_IS_GNUCC)
 # GCC opts.
   set(GK_COPTIONS "${GK_COPTIONS} -std=c99 -fno-strict-aliasing")
-if(VALGRIND)
+if(GKLIB_VALGRIND)
   set(GK_COPTIONS "${GK_COPTIONS} -march=x86-64 -mtune=generic")
 else()
 # -march=native is not a valid flag on PPC:
@@ -38,7 +38,7 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "power|ppc|powerpc|ppc64|powerpc64" OR (APPLE 
 else()
   set(GK_COPTIONS "${GK_COPTIONS} -march=native")
 endif()
-endif(VALGRIND)
+endif(GKLIB_VALGRIND)
   if(NOT MINGW)
       set(GK_COPTIONS "${GK_COPTIONS} -fPIC")
   endif(NOT MINGW)
@@ -60,33 +60,33 @@ if(APPLE)
 endif(APPLE)
 
 # Find OpenMP if it is requested.
-if(OPENMP)
+if(GKLIB_OPENMP)
   include(FindOpenMP)
-  if(OPENMP_FOUND)
+  if(GKLIB_OPENMP_FOUND)
     set(GK_COPTIONS "${GK_COPTIONS} -D__OPENMP__ ${OpenMP_C_FLAGS}")
   else()
     message(WARNING "OpenMP was requested but support was not found")
-  endif(OPENMP_FOUND)
-endif(OPENMP)
+  endif(GKLIB_OPENMP_FOUND)
+endif(GKLIB_OPENMP)
 
 
 # Add various definitions.
-if(GDB)
+if(GKLIB_GDB)
   set(GK_COPTS "${GK_COPTS} -g")
   set(GK_COPTIONS "${GK_COPTIONS} -Werror")
 else()
   set(GK_COPTS "-O3")
-endif(GDB)
+endif(GKLIB_GDB)
 
 
-if(DEBUG)
+if(GKLIB_DEBUG)
   set(GK_COPTS "-Og")
   set(GK_COPTIONS "${GK_COPTIONS} -DDEBUG")
-endif(DEBUG)
+endif(GKLIB_DEBUG)
 
-if(GPROF)
+if(GKLIB_GPROF)
   set(GK_COPTS "-pg")
-endif(GPROF)
+endif(GKLIB_GPROF)
 
 if(NOT ASSERT)
   set(GK_COPTIONS "${GK_COPTIONS} -DNDEBUG")
@@ -98,17 +98,17 @@ endif(NOT ASSERT2)
 
 
 # Add various options
-if(PCRE)
+if(GKLIB_PCRE)
   set(GK_COPTIONS "${GK_COPTIONS} -D__WITHPCRE__")
-endif(PCRE)
+endif(GKLIB_PCRE)
 
-if(GKREGEX)
+if(GKLIB_GKREGEX)
   set(GK_COPTIONS "${GK_COPTIONS} -DUSE_GKREGEX")
-endif(GKREGEX)
+endif(GKLIB_GKREGEX)
 
-if(GKRAND)
+if(GKLIB_GKRAND)
   set(GK_COPTIONS "${GK_COPTIONS} -DUSE_GKRAND")
-endif(GKRAND)
+endif(GKLIB_GKRAND)
 
 
 # Check for features.
@@ -131,7 +131,7 @@ if(MSVC)
   if("${HAVE_THREADLOCALSTORAGE}" MATCHES "^${HAVE_THREADLOCALSTORAGE}$")
     try_compile(HAVE_THREADLOCALSTORAGE
       ${CMAKE_BINARY_DIR}
-      ${CMAKE_SOURCE_DIR}/conf/check_thread_storage.c)
+      ${CMAKE_CURRENT_SOURCE_DIR}/conf/check_thread_storage.c)
     if(HAVE_THREADLOCALSTORAGE)
       message(STATUS "checking for thread-local storage - found")
     else()
