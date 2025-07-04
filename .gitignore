@@ -60,3 +60,6 @@ graphs/*.npart.*
 GKlib
 .svn/
 
+# VSCode things
+.vscode/
+
