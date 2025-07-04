@@ -455,7 +455,7 @@ idx_t Match_2Hop(ctrl_t *ctrl, graph_t *graph, idx_t *perm, idx_t *match,
     maxdegree using a 2-hop matching that involves vertices that are two 
     hops away from each other. 
     The requirement of the 2-hop matching is a simple non-empty overlap
-    between the adjancency lists of the vertices. */
+    between the adjacency lists of the vertices. */
 /**************************************************************************/
 idx_t Match_2HopAny(ctrl_t *ctrl, graph_t *graph, idx_t *perm, idx_t *match, 
           idx_t cnvtxs, size_t *r_nunmatched, size_t maxdegree)
@@ -559,7 +559,7 @@ idx_t Match_2HopAll(ctrl_t *ctrl, graph_t *graph, idx_t *perm, idx_t *match,
 
   WCOREPUSH;
 
-  /* collapse vertices with identical adjancency lists */
+  /* collapse vertices with identical adjacency lists */
   keys = ikvwspacemalloc(ctrl, nunmatched);
   for (ncand=0, pi=0; pi<nvtxs; pi++) {
     i = perm[pi];
@@ -820,7 +820,7 @@ void PrintCGraphStats(ctrl_t *ctrl, graph_t *graph)
 
 /*************************************************************************/
 /*! This function creates the coarser graph. Depending on the size of the
-    candidate adjancency lists it either uses a hash table or an array
+    candidate adjacency lists it either uses a hash table or an array
     to do duplicate detection.
  */
 /*************************************************************************/

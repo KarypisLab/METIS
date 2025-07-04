@@ -725,7 +725,7 @@ void FM_2WayNodeRefine2SidedP(ctrl_t *ctrl, graph_t *graph,
 
 /*************************************************************************/
 /*! This function computes a cache-friendly permutation of each partition.
-    The resulting permutation is retuned in old2new, which is a vector of 
+    The resulting permutation is returned in old2new, which is a vector of 
     size nvtxs such for vertex i, old2new[i] is its new vertex number. 
 */
 /**************************************************************************/
