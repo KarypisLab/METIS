@@ -135,4 +135,27 @@ int metis_rcode(int sigrval)
   }
 }
 
+/*****************************************************************************/
+/*! This function returns version and data type information. All arguments are
+    optional and may be NULL.
+
+    \param major will hold the major version.
+    \param minor will hold the minor version.
+    \param subminor will hold the subminor version.
+    \param idx_bits will hold sizeof(idx_t)*8.
+    \param idx_bits will hold sizeof(real_t)*8
+
+*/
+/*****************************************************************************/
+int METIS_Version(int *major, int *minor, int *subminor, int *idx_bits,
+                  int *real_bits)
+{
+  if (major) *major = METIS_VER_MAJOR;
+  if (minor) *minor = METIS_VER_MINOR;
+  if (subminor) *subminor = METIS_VER_SUBMINOR;
+  if (idx_bits) *idx_bits = sizeof(idx_t)*8;
+  if (real_bits) *real_bits = sizeof(real_t)*8;
+
+  return METIS_OK;
+}
 
