@@ -13,6 +13,7 @@ option(OPENMP "enable OpenMP support" OFF)
 option(PCRE "enable PCRE support" OFF)
 option(GKREGEX "enable GKREGEX support" OFF)
 option(GKRAND "enable GKRAND support" OFF)
+option(NATIVE "enable native cpu optimizations" OFF)
 
 # Add compiler flags.
 if(MSVC)
@@ -31,7 +32,7 @@ if(CMAKE_COMPILER_IS_GNUCC)
   set(GK_COPTIONS "${GK_COPTIONS} -std=c99 -fno-strict-aliasing")
 if(VALGRIND)
   set(GK_COPTIONS "${GK_COPTIONS} -march=x86-64 -mtune=generic")
-else()
+elseif(NATIVE)
 # -march=native is not a valid flag on PPC:
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "power|ppc|powerpc|ppc64|powerpc64" OR (APPLE AND CMAKE_OSX_ARCHITECTURES MATCHES "ppc|ppc64"))
   set(GK_COPTIONS "${GK_COPTIONS} -mtune=native")
