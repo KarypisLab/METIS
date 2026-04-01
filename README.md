@@ -54,8 +54,10 @@ directories, respectively.
     cc=[compiler]     - The C compiler to use [default is determined by CMake]
     shared=1          - Build a shared library instead of a static one [off by default]
     prefix=[PATH]     - Set the installation prefix [~/local by default]
-    gklib_path=[PATH] - Set the prefix path where GKlib has been installed. You can skip
-                        this if GKlib's installation prefix is the same as that of METIS.
+    gklib_path=[PATH] - Set the installation prefix where GKlib has been installed.
+                        Pass the prefix itself (e.g., ~/local), not ~/local/lib or
+                        ~/local/lib64. You can skip this if GKlib's installation prefix
+                        is the same as that of METIS.
     i64=1             - Sets to 64 bits the width of the datatype that will store information
                         about the vertices and their adjacency lists. 
     r64=1             - Sets to 64 bits the width of the datatype that will store information 
@@ -88,4 +90,3 @@ Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-
