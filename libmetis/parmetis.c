@@ -292,6 +292,7 @@ void FM_2WayNodeRefine1SidedP(ctrl_t *ctrl, graph_t *graph,
     irandArrayPermute(nbnd, swaps, nbnd, 1);
     for (ii=0; ii<nbnd; ii++) {
       i = bndind[swaps[ii]];
+      if (i < 0 || i >= nvtxs) continue;
       ASSERT(where[i] == 2);
       if (hmarker[i] == -1 || hmarker[i] == to) {
         rpqInsert(queue, i, vwgt[i]-rinfo[i].edegrees[from]);
