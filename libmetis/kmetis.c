@@ -53,7 +53,7 @@ int METIS_PartGraphKway(idx_t *nvtxs, idx_t *ncon, idx_t *xadj, idx_t *adjncy,
   SetupKWayBalMultipliers(ctrl, graph);
 
   /* set various run parameters that depend on the graph */
-  ctrl->CoarsenTo = gk_max((*nvtxs)/(40*gk_log2(*nparts)), 30*(*nparts));
+  ctrl->CoarsenTo = gk_max((*nvtxs)/(40*gk_max(gk_log2(*nparts), 1)), 30*(*nparts));
   ctrl->nIparts   = (ctrl->nIparts != -1 ? ctrl->nIparts : (ctrl->CoarsenTo == 30*(*nparts) ? 4 : 5));
 
   /* take care contiguity requests for disconnected graphs */
