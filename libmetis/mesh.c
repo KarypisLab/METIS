@@ -15,6 +15,7 @@
 
 #include "metislib.h"
 
+#include <assert.h>
 
 /*****************************************************************************/
 /*! This function creates a graph corresponding to the dual of a finite element
@@ -251,10 +252,9 @@ idx_t FindCommonElements(idx_t qid, idx_t elen, idx_t *eind, idx_t *nptr,
     }
   }
 
-  /* put qid into the neighbor list (in case it is not there) so that it
-     will be removed in the next step */
-  if (marker[qid] == 0)
-    nbrs[k++] = qid;
+  /* The element whose index is qid is always a trivial neighbor of itself,
+     so it should be excluded from the list of its neighbors. */
+  assert(marker[qid] == elen);
   marker[qid] = 0;
 
   /* compact the list to contain only those with at least ncommon nodes */
