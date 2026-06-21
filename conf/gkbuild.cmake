@@ -128,7 +128,8 @@ if(MSVC)
   if("${HAVE_THREADLOCALSTORAGE}" MATCHES "^${HAVE_THREADLOCALSTORAGE}$")
     try_compile(HAVE_THREADLOCALSTORAGE
       ${CMAKE_BINARY_DIR}
-      ${CMAKE_SOURCE_DIR}/conf/check_thread_storage.c)
+      ${CMAKE_SOURCE_DIR}/conf/check_thread_storage.c
+      COMPILE_DEFINITIONS "${GK_COPTIONS}")
     if(HAVE_THREADLOCALSTORAGE)
       message(STATUS "checking for thread-local storage - found")
     else()
