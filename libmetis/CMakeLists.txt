@@ -8,6 +8,10 @@ file(GLOB metis_sources *.c)
 add_library(metis ${METIS_LIBRARY_TYPE} ${metis_sources})
 target_link_libraries(metis GKlib)
 
+if(SHARED)
+  target_link_libraries(metis GKlib)
+endif()
+
 if(METIS_INSTALL)
   install(TARGETS metis
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
