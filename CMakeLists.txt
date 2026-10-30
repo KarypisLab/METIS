@@ -73,3 +73,34 @@ link_directories(${METIS_LINK_DIRS})
 add_subdirectory("build/xinclude")
 add_subdirectory("libmetis")
 add_subdirectory("programs")
+
+if(METIS_INSTALL)
+  file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/include/metis.h METIS_VER_MAJOR_LINE REGEX "#define METIS_VER_MAJOR[ \t]+[0-9]+")
+  file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/include/metis.h METIS_VER_MINOR_LINE REGEX "#define METIS_VER_MINOR[ \t]+[0-9]+")
+  file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/include/metis.h METIS_VER_SUBMINOR_LINE REGEX "#define METIS_VER_SUBMINOR[ \t]+[0-9]+")
+  string(REGEX REPLACE ".*METIS_VER_MAJOR[ \t]+([0-9]+).*" "\\1" METIS_VERSION_MAJOR "${METIS_VER_MAJOR_LINE}")
+  string(REGEX REPLACE ".*METIS_VER_MINOR[ \t]+([0-9]+).*" "\\1" METIS_VERSION_MINOR "${METIS_VER_MINOR_LINE}")
+  string(REGEX REPLACE ".*METIS_VER_SUBMINOR[ \t]+([0-9]+).*" "\\1" METIS_VERSION_SUBMINOR "${METIS_VER_SUBMINOR_LINE}")
+
+  include(CMakePackageConfigHelpers)
+  write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/METISConfigVersion.cmake
+    VERSION "${METIS_VERSION_MAJOR}.${METIS_VERSION_MINOR}.${METIS_VERSION_SUBMINOR}"
+    COMPATIBILITY SameMajorVersion
+  )
+  configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/METISConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/METISConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/metis
+  )
+  install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/METISConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/METISConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/metis
+  )
+  install(EXPORT METISTargets
+    FILE METISTargets.cmake
+    NAMESPACE METIS::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/metis
+  )
+endif()
