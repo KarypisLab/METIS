@@ -159,7 +159,7 @@ idx_t MlevelRecursiveBisection(ctrl_t *ctrl, graph_t *graph, idx_t nparts,
 {
   idx_t i, j, nvtxs, ncon, objval;
   idx_t *label, *where;
-  graph_t *lgraph, *rgraph;
+  graph_t *lgraph = NULL, *rgraph = NULL;
   real_t wsum, *tpwgts2;
 
   if ((nvtxs = graph->nvtxs) == 0)
