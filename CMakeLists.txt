@@ -5,16 +5,23 @@ include(GNUInstallDirs)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# T3.1: enable link-time / interprocedural optimization when the toolchain
-# supports it. Lets the hot k-way/FM refinement loops inline the rpq* priority
-# queue ops (instantiated in libmetis/gklib.c) across translation units.
-include(CheckIPOSupported)
-check_ipo_supported(RESULT METIS_IPO_SUPPORTED OUTPUT METIS_IPO_MSG)
-if(METIS_IPO_SUPPORTED)
-  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-  message(STATUS "METIS: interprocedural optimization (LTO) enabled")
-else()
-  message(STATUS "METIS: IPO/LTO not supported: ${METIS_IPO_MSG}")
+# Link-time optimization (LTO) is opt-in (lto=1). With GCC the default LTO
+# objects are "slim" (GIMPLE only, no machine code), so an installed static
+# libmetis.a could be linked only by the same GCC version through its linker
+# plugin; clang, ifx, and other GCC versions failed (issue #128). When LTO is
+# on, GCC builds emit fat objects (see libmetis/CMakeLists.txt) so the library
+# still links without the plugin. A -DCMAKE_INTERPROCEDURAL_OPTIMIZATION given
+# on the command line is left untouched when LTO is off.
+option(LTO "enable link-time optimization" OFF)
+if(LTO)
+  include(CheckIPOSupported)
+  check_ipo_supported(RESULT METIS_IPO_SUPPORTED OUTPUT METIS_IPO_MSG)
+  if(METIS_IPO_SUPPORTED)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+    message(STATUS "METIS: interprocedural optimization (LTO) enabled")
+  else()
+    message(STATUS "METIS: IPO/LTO not supported: ${METIS_IPO_MSG}")
+  endif()
 endif()
 set(SHARED FALSE CACHE BOOL "build a shared library")
 
