@@ -63,6 +63,7 @@ GKlib
 # Agent/session artifacts
 .aijournal/
 .aisources/
+.aiwspace/
 
 # macOS Finder droppings
 .DS_Store
