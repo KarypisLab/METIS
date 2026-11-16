@@ -2,6 +2,7 @@
 i64        = not-set
 r64        = not-set
 gdb        = not-set
+werror     = not-set
 assert     = not-set
 assert2    = not-set
 debug      = not-set
@@ -37,6 +38,9 @@ ifneq ($(r64), not-set)
 endif
 ifneq ($(gdb), not-set)
     CONFIG_FLAGS += -DGDB=$(gdb)
+endif
+ifneq ($(werror), not-set)
+    CONFIG_FLAGS += -DWERROR=$(werror)
 endif
 ifneq ($(assert), not-set)
     CONFIG_FLAGS += -DASSERT=$(assert)

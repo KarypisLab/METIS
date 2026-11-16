@@ -4,6 +4,7 @@ include(CheckIncludeFile)
 
 # Setup options.
 option(GDB "enable use of GDB" OFF)
+option(WERROR "treat compiler warnings as errors" OFF)
 option(ASSERT "turn asserts on" OFF)
 option(ASSERT2 "additional assertions" OFF)
 option(DEBUG "add debugging support" OFF)
@@ -40,11 +41,18 @@ else()
 endif()
 endif(VALGRIND)
 # GCC warnings.
-  set(GK_COPTIONS "${GK_COPTIONS} -Werror -Wall -pedantic -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unknown-pragmas -Wno-unused-label")
+  set(GK_COPTIONS "${GK_COPTIONS} -Wall -pedantic -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unknown-pragmas -Wno-unused-label")
 elseif(${CMAKE_C_COMPILER_ID} MATCHES "Sun")
 # Sun insists on -xc99.
   set(GK_COPTIONS "${GK_COPTIONS} -xc99")
 endif(CMAKE_COMPILER_IS_GNUCC)
+
+# -Werror is opt-in (werror=1). A default -Werror turns a new compiler's
+# false-positive warning into a failed build for every user (issue #127:
+# GCC 13 -Wstringop-overflow under LTO).
+if(WERROR AND NOT MSVC)
+  set(GK_COPTIONS "${GK_COPTIONS} -Werror")
+endif()
 
 if(${CMAKE_C_COMPILER_ID} STREQUAL "Intel")
   set(GK_COPTIONS "${GK_COPTIONS} -xHost")

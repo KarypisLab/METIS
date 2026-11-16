@@ -66,6 +66,7 @@ directories, respectively.
 ### Advanced debugging related options:
 
     gdb=1           - Build with support for GDB [off by default]
+    werror=1        - Treat compiler warnings as errors [off by default]
     debug=1         - Enable debugging support [off by default]
     assert=1        - Enable asserts [off by default]
     assert2=1       - Enable very expensive asserts [off by default]
