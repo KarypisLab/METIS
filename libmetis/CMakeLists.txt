@@ -8,6 +8,12 @@ file(GLOB metis_sources *.c)
 add_library(metis ${METIS_LIBRARY_TYPE} ${metis_sources})
 target_link_libraries(metis GKlib)
 
+# With GCC LTO, also emit machine code next to the GIMPLE (fat objects) so
+# libmetis.a links with non-GCC toolchains and without the LTO plugin (#128).
+if(CMAKE_INTERPROCEDURAL_OPTIMIZATION AND CMAKE_C_COMPILER_ID STREQUAL "GNU")
+  target_compile_options(metis PRIVATE -ffat-lto-objects)
+endif()
+
 if(METIS_INSTALL)
   install(TARGETS metis
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
