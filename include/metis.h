@@ -214,6 +214,9 @@ METIS_API(int) METIS_Free(void *ptr);
 
 METIS_API(int) METIS_SetDefaultOptions(idx_t *options);
 
+METIS_API(int) METIS_Version(int *major, int *minor, int *subminor, int *idx_bits,
+                  int *real_bits);
+
 
 /* These functions are used by ParMETIS */
 
